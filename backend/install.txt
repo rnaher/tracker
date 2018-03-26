@@ -1,0 +1,13 @@
+sudo pip install virtualenv
+
+mkdir newproj
+cd newproj
+export all_proxy="https://proxy.iiit.ac.in:8080/"
+virtualenv venv
+
+venv/bin/activate
+
+sudo pip install Flask
+
+sudo pip install Flask-PyMongo
+

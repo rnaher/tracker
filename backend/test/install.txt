@@ -1,0 +1,21 @@
+installation:
+
+sudo pip install virtualenv
+
+export all_proxy="https://proxy.iiit.ac.in:8080/"
+virtualenv venv
+
+venv/bin/activate
+
+sudo pip install Flask
+exit
+
+execution:
+venv/bin/activate
+python dummy_server.py
+
+
+**** quick testing ur setup****
+from browser:  http://127.0.0.1:8080/app/users
+
+
