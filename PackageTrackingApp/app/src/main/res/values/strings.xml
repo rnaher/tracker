@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">PackageTrackingApp</string>
+    <string name="edit_message">Enter a message</string>
+    <string name="button_send">Send</string>
+    <string name="reg_button">Register</string>
+    <string name="register_menu">Registration</string>
+    <string name="reg_name_hint">Enter name</string>
+    <string name="reg_contact_hint">Enter contact no.</string>
+    <string name="reg_email_hint">Enter email ID</string>
+    <string name="reg_user_hint">Pick a username</string>
+    <string name="reg_pass_hint">Choose a password</string>
+    <string name="register_usertype">User Type</string>
+    <string name="reg_radio_seller">Seller</string>
+    <string name="reg_radio_de">Delivery Executive</string>
+    <string name="submit_button">Submit</string>
+</resources>
