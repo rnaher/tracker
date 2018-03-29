@@ -14,4 +14,8 @@
     <string name="reg_radio_de">Delivery Executive</string>
     <string name="submit_button">Submit</string>
     <string name="title_activity_delivery_executive">DeliveryExecutive</string>
+    <string name="login_menu">Sign-in</string>
+    <string name="login_user_hint">Enter your username</string>
+    <string name="login_pass_hint">Enter your password</string>
+    <string name="login_button">Sign-In</string>
 </resources>
