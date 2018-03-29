@@ -7,3 +7,6 @@
   * [Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-16-04) (check other if it does not work)
   * Use <b>username</b>=`root` and <b>password</b>=`root` during installation of mysql server.
   * Create Database with <b>name</b> `store` and with <b>name</b>=`package_detail` in it. [(helpful commands for trivial stuff)](https://www.a2hosting.in/kb/developer-corner/mysql/managing-mysql-databases-and-users-from-the-command-line)
+* <h>Request URL <h>
+  * Buyer / Seller can track package using this url (http://localhost:8080/AppServer/requests?pkgid=1). It will show the current location    of package on google map.
+  * Delivery Executive can update location of package using similar url (http://localhost:8080/AppServer/requests?pkgid=1&&lat=17.44798&&lng=78.34830). Such call will update location of package with id=1 to given latitude and longitude.
