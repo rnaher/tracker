@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="status_options">
+        <item>In Warehouse</item>
+        <item>Assigned</item>
+        <item>Shipped</item>
+        <item>Out for Delivery</item>
+        <item>Failed</item>
+        <item>Delivered</item>
+    </string-array>
+</resources>

@@ -33,8 +33,14 @@
 
         <service android:name=".GPS_Service" />
 
-        <activity android:name=".LoginActivity"
-                  android:parentActivityName=".MainActivity"/>
+        <activity
+            android:name=".LoginActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".DeliveryDashboard"
+            android:parentActivityName=".LoginActivity" />
+        <activity android:name=".ScanUpdateActivity" />
+        <activity android:name=".ViewPackagesActivity"></activity>
     </application>
 
 </manifest>
