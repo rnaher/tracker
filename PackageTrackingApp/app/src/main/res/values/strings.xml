@@ -13,4 +13,5 @@
     <string name="reg_radio_seller">Seller</string>
     <string name="reg_radio_de">Delivery Executive</string>
     <string name="submit_button">Submit</string>
+    <string name="title_activity_delivery_executive">DeliveryExecutive</string>
 </resources>

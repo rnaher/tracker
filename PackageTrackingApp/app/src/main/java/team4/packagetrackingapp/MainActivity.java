@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
     /** Called when the user taps the Register button */
     public void register(View view) {
-        Intent intent = new Intent(this, RegisterActivity.class);
+        Intent intent = new Intent(this, DeliveryExecutive.class);
         startActivity(intent);
     }
 }
