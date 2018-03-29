@@ -219,8 +219,10 @@ def all_packages(username):
 			pprint.pprint(package)
 			pack_list.append(package)
 
-
-		output = { "error_code": "000","packages":pack_list}
+		if len(pack_list)!=0:
+			output = { "error_code": "000","packages":pack_list}
+		else:
+			output = {  "error_code": "010","message":"No packages found"}
 
 	# TODO handle "message": "not authorized to access this details " & No packages found"
 

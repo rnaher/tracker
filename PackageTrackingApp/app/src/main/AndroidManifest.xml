@@ -39,8 +39,13 @@
         <activity
             android:name=".DeliveryDashboard"
             android:parentActivityName=".LoginActivity" />
-        <activity android:name=".ScanUpdateActivity" />
-        <activity android:name=".ViewPackagesActivity"></activity>
+        <activity
+            android:name=".ScanUpdateActivity"
+            android:parentActivityName=".DeliveryDashboard" />
+        <activity
+            android:name=".ViewPackagesActivity"
+            android:parentActivityName=".DeliveryDashboard" />
+        <activity android:name=".SellerDashboard" />
     </application>
 
 </manifest>
