@@ -14,6 +14,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Button;
+
+import com.google.zxing.integration.IntentIntegrator;
+import com.google.zxing.integration.IntentResult;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -21,19 +25,23 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import android.view.View.*;
 
 import org.json.JSONObject;
 
 import java.util.Objects;
 
-public class ScanUpdateActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class ScanUpdateActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 
+//    private Button scanBtn;
+    private TextView contentTxt;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_update);
 
         Spinner status_options = findViewById(R.id.statusSpinner);
+//        scanBtn = (Button)findViewById(R.id.barcodeButton);
 
         status_options.setOnItemSelectedListener(this);
 
@@ -41,6 +49,10 @@ public class ScanUpdateActivity extends AppCompatActivity implements AdapterView
                 R.array.status_options, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         status_options.setAdapter(adapter);
+        contentTxt = (TextView)findViewById(R.id.pkgIDField);
+
+
+//        scanBtn.setOnClickListener(this);
     }
 
     @Override
@@ -63,6 +75,32 @@ public class ScanUpdateActivity extends AppCompatActivity implements AdapterView
 
         TextView pkgIDView = findViewById(R.id.pkgIDView);
         pkgIDView.setText(pkg_ID.getText().toString());
+    }
+
+    /** Called when the user taps the scan barcode button */
+    public void scanBarcode(View view) {
+        IntentIntegrator scanIntegrator = new IntentIntegrator(this);
+        scanIntegrator.initiateScan();
+
+        EditText pkg_ID = findViewById(R.id.pkgIDField);
+
+        TextView pkgIDView = findViewById(R.id.pkgIDView);
+//        pkgIDView.setText(pkg_ID.getText().toString());
+    }
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+//retrieve scan result
+        IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+        if (scanningResult != null) {
+//we have a result
+            String scanContent = scanningResult.getContents();
+            String scanFormat = scanningResult.getFormatName();
+            contentTxt.setText(scanContent);
+        }
+        else{
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "No scan data received!", Toast.LENGTH_SHORT);
+            toast.show();
+        }
     }
 
     /** Called when the user taps the Update Package Status button */
@@ -150,9 +188,10 @@ public class ScanUpdateActivity extends AppCompatActivity implements AdapterView
         requestQueue.add(objectRequest);
     }
 
-    /** Called when user taps Use Barcode */
-    public void barCode(View view) {
-        Intent go_to_barcode_page = new Intent(this, ScanBarcode.class);
-        startActivity(go_to_barcode_page);
-    }
+
+//    /** Called when user taps Use Barcode */
+//    public void barCode(View view) {
+//        Intent go_to_barcode_page = new Intent(this, ScanBarcode.class);
+//        startActivity(go_to_barcode_page);
+//    }
 }
