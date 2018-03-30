@@ -19,6 +19,7 @@
     <string name="login_pass_hint">Enter your password</string>
     <string name="login_button">Sign-In</string>
     <string name="de_dash_menu">Delivery Executive\'s Dashboard</string>
+    <string name="seller_dash_menu">Seller\'s Dashboard</string>
     <string name="de_dash_1">Scan &amp; Update</string>
     <string name="de_dash_2">View Packages</string>
     <string name="scan_update_1">Package ID</string>

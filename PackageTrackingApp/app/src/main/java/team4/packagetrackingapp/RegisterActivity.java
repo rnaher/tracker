@@ -1,6 +1,8 @@
 package team4.packagetrackingapp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -20,6 +22,8 @@ import com.google.gson.Gson;
 import org.json.JSONObject;
 
 import java.util.Objects;
+
+
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -78,7 +82,16 @@ public class RegisterActivity extends AppCompatActivity {
             Log.e("JSON object creation", "failed");
         }*/
 
-        String URL= "http://10.0.2.2:8080/app/registration";
+//        String URL= "http://10.0.2.2:8080/app/registration";
+
+        SharedPreferences sharedPreferences= getSharedPreferences(MainActivity.HOST_Config, Context.MODE_PRIVATE);
+
+        String hostIP= sharedPreferences.getString("HOST_IP",null);
+        String hostPort= sharedPreferences.getString("HOST_PORT",null);
+
+        String URL = "http://"+hostIP+":"+hostPort+"/app/registration";
+        System.out.println(URL) ;
+//        String URL= "http://10.3.0.147:8080/app/registration";
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
 

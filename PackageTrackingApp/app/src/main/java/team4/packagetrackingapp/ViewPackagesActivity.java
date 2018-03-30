@@ -35,7 +35,14 @@ public class ViewPackagesActivity extends AppCompatActivity {
                 Context.MODE_PRIVATE);
         String username = sharedPreferences.getString("username", null);
 
-        String URL= "http://10.0.2.2:8080/app/packages/";
+        SharedPreferences sP= getSharedPreferences(MainActivity.HOST_Config, Context.MODE_PRIVATE);
+
+        String hostIP= sP.getString("HOST_IP",null);
+        String hostPort= sP.getString("HOST_PORT",null);
+
+        String URL = "http://"+hostIP+":"+hostPort+"/app/packages/";
+
+//        String URL= "http://10.0.2.2:8080/app/packages/";
         URL = URL + username;
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
