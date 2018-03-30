@@ -223,7 +223,6 @@ def all_packages(username):
 		if len(pack_list)!=0:
 			output = { "error_code": "000","packages":pack_list}
 		else:
-<<<<<<< HEAD
 			output = {  "error_code": "010","packages":"No packages found"} 
 
 
@@ -259,9 +258,6 @@ def get_one_packages(packageID, username):
 
 
 		output = { "error_code": "000","package":package}
-=======
-			output = {  "error_code": "010","message":"No packages found"}
->>>>>>> 0cb0c210158c15783b996652487b4014d210c660
 
 	# TODO handle "message": "not authorized to access this details " & No packages found"
 
@@ -299,9 +295,6 @@ def addDE(username):
 		output = { "error_code": "010", "message": "Package details do not exist in system"}
 
 	return jsonify({'Response' : output})
-
-
-
 
 if __name__ == '__main__':
 	app.run(debug=True, port = 8080)
