@@ -5,7 +5,7 @@
   <head>
     <style>
        #map {
-        height: 400px;
+        height: 500px;
         width: 100%;
        }
     </style>
@@ -17,13 +17,15 @@
       function initMap() {
         var uluru = {lat: <%  out.println(request.getAttribute("lat")); %>, lng: <%  out.println(request.getAttribute("lng")); %>};
         var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 4,
+          zoom: 100,
           center: uluru
         });
         var marker = new google.maps.Marker({
           position: uluru,
           map: map
         });
+        map.setZoom(15);
+        map.panTo(marker.position);
       }
     </script>
     <script async defer
