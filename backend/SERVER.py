@@ -87,7 +87,7 @@ def addPackage(username):
 	except Exception, e:
 		print (e.message)
 		print("\n[ERROR]] Add package Failed...!!!")
-		output = {'error_code':'100','message' : 'Login Failed... User does not exist or password is incorrect'}
+		output = {'error_code':'100','message' : 'add package Failed... Access denied'}
 
 	return jsonify({'Response' : output})
 
@@ -137,6 +137,7 @@ def updatePackageStatus(packageID):
 				}
 			}
 		)
+		# TODO: push package id into DE package list
 		package = packages.find_one({'packageID' : packageID})
 
 		print("\n[INFO] status updated ... \n [INFO] package: ",packageID, "\t status ",package['status'])
@@ -201,7 +202,7 @@ def contactBuyer(packageID,username):
 # View all packages
 @app.route('/app/packages/<string:username>', methods=['GET'])
 def all_packages(username):
-	print("[DEBUG] contact Buyer Request ")
+	print("[DEBUG] View all packages ")
 	try:
 		packages = mongo.db.packages
 		users= mongo.db.users
@@ -222,7 +223,45 @@ def all_packages(username):
 		if len(pack_list)!=0:
 			output = { "error_code": "000","packages":pack_list}
 		else:
+<<<<<<< HEAD
+			output = {  "error_code": "010","packages":"No packages found"} 
+
+
+	# TODO handle "message": "not authorized to access this details " & No packages found"
+
+	except Exception, e:
+		print (e.message)
+		print("\n[ERROR] check status Failed...!!!")
+		output = { "error_code": "010", "message": "Package details do not exist in system"}
+
+	return jsonify({'Response' : output})
+
+
+# View one package details
+@app.route('/app/package/<int:packageID>/<string:username>', methods=['GET'])
+def get_one_packages(packageID, username):
+	print("[DEBUG] View one package details ")
+	try:
+		packages = mongo.db.packages
+		users= mongo.db.users
+
+		package = packages.find_one({'packageID':packageID},{'_id':0})
+		pprint.pprint(package)
+		if 'sellerID' in package:
+			seller=users.find_one({'_id': ObjectId(package['sellerID'])})
+			package['seller']=seller['name']
+			del package['sellerID']
+		if "deID" in package:
+			DE=users.find_one({'_id': ObjectId(package['deID'])})
+			package['DE']=DE['name']
+			del package['deID']
+		pprint.pprint(package)
+
+
+		output = { "error_code": "000","package":package}
+=======
 			output = {  "error_code": "010","message":"No packages found"}
+>>>>>>> 0cb0c210158c15783b996652487b4014d210c660
 
 	# TODO handle "message": "not authorized to access this details " & No packages found"
 
@@ -232,6 +271,37 @@ def all_packages(username):
 		output = { "error_code": "010", "message": "Package details do not exist in system"}
 
 	return jsonify({'Response' : output})
+
+
+# add DE 
+@app.route('/app/de/<string:username>', methods=['POST'])
+def addDE(username):
+	print("[DEBUG] add DE ")
+	try:
+		users=mongo.db.users
+		deUsername=request.json['email_id'].split('@')[0]
+		print("deUsername: ", deUsername)
+		dePassword="tracker1234"
+		request.json['username']=deUsername
+		request.json['password']=bcrypt.generate_password_hash(dePassword)
+		request.json['user_type']= 'de'
+		pprint.pprint(request.json)
+		DEuser_id = users.insert(request.json)
+
+		users.update({'username':username},{'$push':{'DE_list':DEuser_id }})
+		# update({'ref': ref}, {'$push': {'tags': new_tag}})
+
+		output = { "error_code": "000","message": "DE added successfully","username":deUsername,"password":dePassword}
+
+	except Exception, e:
+		print (e.message)
+		print("\n[ERROR]] check status Failed...!!!")
+		output = { "error_code": "010", "message": "Package details do not exist in system"}
+
+	return jsonify({'Response' : output})
+
+
+
 
 if __name__ == '__main__':
 	app.run(debug=True, port = 8080)
