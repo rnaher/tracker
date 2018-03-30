@@ -58,7 +58,15 @@ public class LoginActivity extends AppCompatActivity {
             Log.e("NullPointerException", "thrown while trying to print JSONObject");
         }*/
 
-        String URL= "http://10.0.2.2:8080/app/login";
+        SharedPreferences sharedPreferences= getSharedPreferences(MainActivity.HOST_Config, Context.MODE_PRIVATE);
+
+        String hostIP= sharedPreferences.getString("HOST_IP",null);
+        String hostPort= sharedPreferences.getString("HOST_PORT",null);
+
+        String URL = "http://"+hostIP+":"+hostPort+"/app/login";
+        System.out.println(URL) ;
+
+//        String URL= "http://10.0.2.2:8080/app/login";
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
 
@@ -102,6 +110,12 @@ public class LoginActivity extends AppCompatActivity {
                                             LoginActivity.this,
                                             DeliveryDashboard.class);
                                     startActivity(goto_de_dash);
+                            }
+                            else if (Objects.equals(user_type, "seller")) {
+                                    Intent goto_seller_dash = new Intent(
+                                            LoginActivity.this,
+                                            SellerDashboard.class);
+                                    startActivity(goto_seller_dash);
                             }
                         } else {
                             Toast.makeText(getApplicationContext(), msg,

@@ -77,7 +77,15 @@ public class ScanUpdateActivity extends AppCompatActivity implements AdapterView
         TextView pkgStatusView = findViewById(R.id.pkgStatusView);
         String status = pkgStatusView.getText().toString();
 
-        String URL= "http://10.0.2.2:8080/app/update/";
+        SharedPreferences sP= getSharedPreferences(MainActivity.HOST_Config, Context.MODE_PRIVATE);
+
+        String hostIP= sP.getString("HOST_IP",null);
+        String hostPort= sP.getString("HOST_PORT",null);
+
+        String URL = "http://"+hostIP+":"+hostPort+"/app/update/";
+
+
+//        String URL= "http://10.0.2.2:8080/app/update/";
         URL = URL + pkgID;
         Log.e("new URL", URL);
 
