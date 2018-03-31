@@ -11,3 +11,7 @@ sudo pip install Flask
 
 sudo pip install Flask-PyMongo
 
+sudo pip install flask-bcrypt
+
+
+
