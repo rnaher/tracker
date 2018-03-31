@@ -189,9 +189,5 @@ public class ScanUpdateActivity extends AppCompatActivity implements AdapterView
     }
 
 
-//    /** Called when user taps Use Barcode */
-//    public void barCode(View view) {
-//        Intent go_to_barcode_page = new Intent(this, ScanBarcode.class);
-//        startActivity(go_to_barcode_page);
-//    }
+//
 }

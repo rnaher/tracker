@@ -22,6 +22,12 @@
     <string name="seller_dash_menu">Seller\'s Dashboard</string>
     <string name="de_dash_1">Scan &amp; Update</string>
     <string name="de_dash_2">View Packages</string>
+    <string name="de_seller_1">Add Package</string>
+    <string name="de_seller_2">Track Package</string>
+    <string name="de_seller_3">View All Packages</string>
+    <string name="list_DE">List DE</string>
+    <string name="notifications">Notifications</string>
+    <string name="profile">Profile</string>
     <string name="scan_update_1">Package ID</string>
     <string name="scan_update_2">Package Status</string>
     <string name="scan_update_barcode_button">Use Barcode</string>
@@ -29,6 +35,8 @@
     <string name="scan_update_pkg_ID">Package ID entered/scanned:</string>
     <string name="scan_update_pkg_status">Package Status Selected:</string>
     <string name="scan_update_submit">Update Package Status</string>
+    <string name="scan_barcode_button">Use Barcode</string>
+    <string name="add_package_manual_hint">Enter manually</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
 
