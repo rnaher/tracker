@@ -7,7 +7,7 @@ from flask import request
 from flask_pymongo import PyMongo
 from flask_bcrypt import Bcrypt
 from bson import ObjectId  
-
+import datetime
 import pprint  
 
 app = Flask(__name__)
@@ -292,9 +292,51 @@ def addDE(username):
 	except Exception, e:
 		print (e.message)
 		print("\n[ERROR]] check status Failed...!!!")
-		output = { "error_code": "010", "message": "Package details do not exist in system"}
+		output = { "error_code": "010", "message": "add DE failed"}
 
 	return jsonify({'Response' : output})
+
+# delete DE:
+
+# create event
+@app.route('/app/event/<int:packageID>/<string:username>', methods=['POST'])
+def createEvent(packageID,username):
+	print("[DEBUG] create event ")
+	output =""
+	try:
+		request.json["packageID"]=packageID
+
+		packages=mongo.db.packages
+		pack_id=packages.find_one({'packageID':packageID},{'_id':1})
+		
+		if pack_id == None:
+			output = { "error_code": "010", "message": "package details do not exist in system"}
+			raise Exception()
+		users =mongo.db.users
+		user = users.find_one({'username' : username})
+		request.json["userID"]=user['_id']
+		request.json["timeStamp"]=datetime.datetime.utcnow()
+		print (request.json["timeStamp"])
+
+		events=mongo.db.events
+
+		new_event_id=events.insert(request.json)
+		new_event= events.find_one({'_id': new_event_id })
+		packages.update({"packageID" :packageID},{'$push':{'event_list':new_event_id }})
+
+		#  TODO : user does not exist case
+
+		output = { "error_code": "000","message": "event created successfully","eventID":str(new_event_id),"time_stamp":str(new_event["timeStamp"])}
+
+	except Exception, e:
+
+		print (e.message)
+		print("\n[ERROR]] check status Failed...!!!")
+		if len(output)==0:
+			output = { "error_code": "010", "message": "create event failed"}
+
+	return jsonify({'Response' : output})
+
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0',debug=True, port = 8080)
