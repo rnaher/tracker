@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -86,17 +87,17 @@ public class ViewPackagesActivity extends AppCompatActivity {
                                     JSONObject pkg = packages.getJSONObject(i);
                                     Log.e("pkg", pkg.toString());
 
-                                    HorizontalScrollView hsView = new
-                                            HorizontalScrollView(ViewPackagesActivity.this);
-
                                     TableRow trow = new TableRow(ViewPackagesActivity.this);
 
                                     TextView tv = new TextView(ViewPackagesActivity.this);
                                     tv.setText(pkg.toString());
+
+/*                                    Button pkgDetails = new Button(ViewPackagesActivity.this);
+                                    pkgDetails.setText(pkg.toString());*/
+
                                     trow.addView(tv);
 
-                                    hsView.addView(trow);
-                                    pkgTable.addView(hsView);
+                                    pkgTable.addView(trow);
                                 }
 
                                 for (int i = 0; i < 100; i++) {
