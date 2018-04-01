@@ -275,7 +275,7 @@ def all_packages(username):
 		packages = mongo.db.packages
 		users= mongo.db.users
 		pack_list = []
-		for package in packages.find({},{'_id':0}):
+		for package in packages.find({},{'_id':0,'event_list':0}):
 			pprint.pprint(package)
 			if 'sellerID' in package:
 				seller=users.find_one({'_id': ObjectId(package['sellerID'])})
