@@ -8,7 +8,9 @@ from flask_pymongo import PyMongo
 from flask_bcrypt import Bcrypt
 from bson import ObjectId  
 import datetime
-import pprint  
+import pprint
+import json
+
 
 app = Flask(__name__)
 
@@ -26,8 +28,12 @@ def addUser():
 	try:
 		users = mongo.db.users
 		# customer_id = customers.insert({'first_name': first_name, 'last_name': last_name})
+		if request.json['user_type']=='de':
+			request.json['seller_id']=ObjectId(request.json['seller_id'])
 		request.json['password']=bcrypt.generate_password_hash(request.json['password'])
+		
 		user_id = users.insert(request.json)
+
 		# new_user = users.find_one({'_id': user_id })
 		output = {'error_code':'000','message' : 'New user created successfully', 'user_id' : str(user_id)}
 		print("\n[INFO] Registration successfully...!!!")
@@ -82,7 +88,7 @@ def addPackage(username):
 		request.json['status']="In warehouse"
 		packages.insert(request.json)
 		output = {'error_code':'000','message' : 'package added successfully'}
-		print("\n[INFO] Registration successfully...!!!")
+		print("\n[INFO] package added ...!!!")
 
 	except Exception, e:
 		print (e.message)
@@ -136,6 +142,7 @@ def updatePackageStatus(packageID,username):
 		request.json["timeStamp"]=datetime.datetime.utcnow()
 		print (request.json["timeStamp"])
 
+		# create events
 		events=mongo.db.events
 
 		new_event_id=events.insert(request.json)
@@ -163,11 +170,34 @@ def updatePackageStatus(packageID,username):
 
 		output = { "error_code": "000", "message": "status updated successfully"}
 
+
 	# TODO handle  "message": "not authorized to access this details "
 	except Exception, e:
 		print (e.message)
 		print("\n[ERROR] update status Failed...!!!")
 		output = { "error_code": "010", "message": "Package details do not exist in system"}
+
+	try:
+		print("[DEBUG] create notifications :")
+		# if request.json['status']=="Failed":
+		data={}
+		data["notification_data"]=request.json['status']
+		data['packageID']=packageID
+		data['seen']=False
+		users= mongo.db.users
+		de = users.find_one({'username':username})
+		data["seller_id"]=de["seller_id"]
+
+		notifications=mongo.db.notifications
+		notifications.insert(data)
+
+		print("\n[INFO] Notification added successfully")
+
+
+
+	except Exception, e:
+		print (e.message)
+		print("\n[ERROR] create notification Failed...!!!")
 
 	return jsonify({'Response' : output})
 
@@ -404,6 +434,47 @@ def createEvent(packageID,username):
 			output = { "error_code": "010", "message": "create event failed"}
 
 	return jsonify({'Response' : output})
+
+# get notification
+@app.route('/app/notification/<string:username>',methods=['GET'])
+def getNotification(username):
+	print("[DEBUG] create event ")
+	try:
+		users = mongo.db.users
+		user = users.find_one({'username' : username})
+		user_id = user['_id']
+		notifications=mongo.db.notifications
+
+		notifn_list = []
+		for notification in notifications.find({'seller_id':user_id,"seen":{'$ne': True}},{'_id':0,'seller_id':0}):
+			notifn_list.append(notification)
+
+		# notifications.update(
+		# 	{'seller_id':user_id,"seen":{'$ne': True}},
+		# 	{
+		# 		"$set": {
+		# 			"seen":True
+		# 			# TODO : add time stamp "HH:MM DD/MM/YYYY" & location 
+		# 		}
+		# 	},
+		# 	{"multi":True}
+		# )
+		# TODO: only failed notifications are shown
+		# TODO: delete after find
+
+		if len(notifn_list)!=0:
+			output = { "error_code": "000","notifications":notifn_list}
+		else:
+			output = { "error_code": "010","message":"No notifications found"}
+
+	except Exception, e:
+
+		print (e.message)
+		print("\n[ERROR]] get notification Failed...!!!")
+		output = { "error_code": "100", "message":  "not authorized to access this details"}
+
+	return jsonify({'Response' : output})
+
 
 
 if __name__ == '__main__':
