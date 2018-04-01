@@ -153,6 +153,55 @@ def updatePackageStatus(packageID):
 	return jsonify({'Response' : output})
 
 # track package
+@app.route('/app/track/<int:packageID>/<string:username>', methods=['GET'])
+def trackPackage(packageID,username):
+	print("[DEBUG] track package :")
+	try:
+		packages = mongo.db.packages
+		package_events=packages.find_one({'packageID':packageID},{'event_list':1})
+		# print package_events
+		if package_events == None:
+			# print ("Package details do not exist in system")
+			output = { "error_code": "010", "message": "Package details do not exist in system"}
+			return jsonify({'Response' : output})
+
+		if "event_list" not in package_events:
+			print ("no events found for the package")
+			output = { "error_code": "010", "message": "no events found for the package"}
+			return jsonify({'Response' : output})
+
+		count = len(package_events["event_list"])
+		details = []
+		events = mongo.db.events
+
+		for event_ID in  package_events["event_list"]:
+			detail={}
+			# print("event_ID:", event_ID)
+			event = events.find_one({'_id':event_ID})
+			detail['status']=event['status']
+			detail['timeStamp']=event['timeStamp']
+			
+			users = mongo.db.users
+			Updated_by=users.find_one({'_id': event['userID']})
+			detail['Updated By']=Updated_by['name']
+
+			details.append(detail)
+
+		# print(details)
+		print("\n[INFO] track package successful ... ")
+
+		output = { "error_code": "000","count":count,"details":details}
+		# if len(event_list) ==0:
+		# 	output = { "error_code": "010", "message": "Package details do not exist in system or no events found for the package"}
+			
+	except Exception, e:
+		print (e.message)
+		print("\n[ERROR] update status Failed...!!!")
+		output = { "error_code": "010", "message": "Package details do not exist in system"}
+	
+	return jsonify({'Response' : output})
+
+
 
 
 # contact DE
