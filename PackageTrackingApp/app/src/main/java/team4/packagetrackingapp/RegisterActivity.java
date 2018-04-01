@@ -43,6 +43,7 @@ public class RegisterActivity extends AppCompatActivity {
         EditText username = findViewById(R.id.userField);
         EditText password = findViewById(R.id.passField);
 
+
         RadioButton seller = findViewById(R.id.sellerButton);
         RadioButton de = findViewById(R.id.deButton);
 
@@ -54,6 +55,7 @@ public class RegisterActivity extends AppCompatActivity {
         } else {
             usertype = "not set";
         }
+        EditText seller_id = findViewById(R.id.seller_id);
 /*
         Log.e("username", username.getText().toString());
         Log.e("password", password.getText().toString());
@@ -62,7 +64,7 @@ public class RegisterActivity extends AppCompatActivity {
         User newUser = new User(name.getText().toString(),
                                 contact.getText().toString(), email.getText().toString(),
                                 username.getText().toString(), password.getText().toString(),
-                                usertype);
+                                usertype,seller_id.getText().toString());
 
 //        newUser.show();
 
