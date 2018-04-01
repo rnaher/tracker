@@ -42,9 +42,9 @@ public class TrackPackage extends AppCompatActivity implements AdapterView.OnIte
         IntentIntegrator scanIntegrator = new IntentIntegrator(this);
         scanIntegrator.initiateScan();
 
-        EditText pkg_ID = findViewById(R.id.newpkgIDField);
+        EditText pkg_ID = findViewById(R.id.trckpkgIDField);
 
-        TextView pkgIDView = findViewById(R.id.pkgIDView);
+//        TextView pkgIDView = findViewById(R.id.pkgIDView);
 //        pkgIDView.setText(pkg_ID.getText().toString());
     }
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
