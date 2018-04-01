@@ -116,17 +116,36 @@ def checkPackageStatus(packageID,username):
 
 
 # update status
-@app.route('/app/update/<int:packageID>', methods=['PUT'])
-def updatePackageStatus(packageID):
+@app.route('/app/update/<int:packageID>/<string:username>', methods=['PUT'])
+def updatePackageStatus(packageID,username):
 	print("[DEBUG] update status Request :\n",request.json)
 	# reqUsername = request.json['username']
 	
-	newStatus = request.json['status']
-	try:
-		packages = mongo.db.packages
-		users = mongo.db.users
-		reqUser =  users.find_one({'username' : request.json['username']})
+	# create event
+	try :
 
+		packages=mongo.db.packages
+		pack_id=packages.find_one({'packageID':packageID},{'_id':1})
+		if pack_id == None:
+			output = { "error_code": "010", "message": "package details do not exist in system"}
+			return jsonify({'Response' : output})
+		request.json["packageID"]=packageID
+		users =mongo.db.users
+		reqUser = users.find_one({'username' : username})
+		request.json["userID"]=reqUser['_id']
+		request.json["timeStamp"]=datetime.datetime.utcnow()
+		print (request.json["timeStamp"])
+
+		events=mongo.db.events
+
+		new_event_id=events.insert(request.json)
+		new_event= events.find_one({'_id': new_event_id })
+		packages.update({"packageID" :packageID},{'$push':{'event_list':new_event_id }})
+		newStatus = request.json['status']
+
+		#  TODO : user does not exist case
+
+		# output = { "error_code": "000","message": "event created successfully","eventID":str(new_event_id),"time_stamp":str(new_event["timeStamp"])}
 		packages.update_one(
 			{'packageID' : packageID},
 			{
