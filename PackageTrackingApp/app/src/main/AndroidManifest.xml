@@ -46,7 +46,9 @@
             android:name=".ViewPackagesActivity"
             android:parentActivityName=".DeliveryDashboard" />
         <activity android:name=".SellerDashboard" />
-        <activity android:name=".AddPackageActivity"></activity>
+        <activity android:name=".AddPackageActivity" />
+        <activity android:name=".TrackPackage" />
+        <activity android:name=".TrackResultActivity"></activity>
     </application>
 
 </manifest>

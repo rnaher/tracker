@@ -37,6 +37,9 @@
     <string name="scan_update_submit">Update Package Status</string>
     <string name="scan_barcode_button">Use Barcode</string>
     <string name="add_package_manual_hint">Enter manually</string>
+    <string name="track_package_manual_hint">Enter manually</string>
+    <string name="track_button">Track</string>
+    <string name="tracking">Tracking...</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
 
