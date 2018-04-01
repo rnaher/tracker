@@ -68,7 +68,7 @@
         android:layout_width="308dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="44dp"
-        android:onClick="Submit"
+        android:onClick="submitPackage"
         android:text="@string/submit_button"
         app:layout_constraintTop_toBottomOf="@+id/destinationField"
         tools:layout_editor_absoluteX="30dp" />

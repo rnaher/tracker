@@ -86,10 +86,12 @@ public class AddPackageActivity extends AppCompatActivity implements AdapterView
         String hostIP= sharedPreferences.getString("HOST_IP",null);
         String hostPort= sharedPreferences.getString("HOST_PORT",null);
 
-        String username = sharedPreferences.getString("username", null);
-        Log.e("username (sharedprefs)", username);
+        sharedPreferences= getSharedPreferences(LoginActivity.MyPREFERENCES, Context.MODE_PRIVATE);
 
-        String URL = "http://"+hostIP+":"+hostPort+"/app/package"+username;
+        String username = sharedPreferences.getString("username", null);
+       // Log.e("username (sharedprefs)", username);
+
+        String URL = "http://"+hostIP+":"+hostPort+"/app/package/"+username;
         System.out.println(URL) ;
 //        String URL= "http://10.3.0.147:8080/app/registration";
 
