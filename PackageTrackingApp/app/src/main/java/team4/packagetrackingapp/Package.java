@@ -4,17 +4,17 @@ import android.util.Log;
 
 public class Package {
 
-    private String id;
+    private int packageID;
     private String destination;
 
-    Package(String id, String destination) {
-        this.id = id;
+    Package(int id, String destination) {
+        this.packageID = id;
         this.destination = destination;
     }
 
     public void show() {
         Log.e("new package created", "with creds");
-        Log.e("id", this.id);
+        Log.e("id", Integer.toString(this.packageID));
         Log.e("destination", this.destination);
 
     }

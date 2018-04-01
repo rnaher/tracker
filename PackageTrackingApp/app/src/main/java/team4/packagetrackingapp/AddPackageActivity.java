@@ -66,7 +66,7 @@ public class AddPackageActivity extends AppCompatActivity implements AdapterView
         EditText package_name = findViewById(R.id.packageField);
         EditText destination = findViewById(R.id.destinationField);
 
-        Package newPackage = new Package(package_name.getText().toString(), destination.getText().toString());
+        Package newPackage = new Package(Integer.parseInt(package_name.getText().toString()), destination.getText().toString());
 
 //        newUser.show();
 

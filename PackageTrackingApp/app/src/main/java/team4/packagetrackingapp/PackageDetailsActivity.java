@@ -38,8 +38,8 @@ public class PackageDetailsActivity extends AppCompatActivity {
             pkgID.setText(pkgDetails.getString("packageID"));
             status.setText(pkgDetails.getString("status"));
             seller.setText(pkgDetails.getString("seller"));
-            de.setText(pkgDetails.getString("DE"));
             dest.setText(pkgDetails.getString("destination"));
+            de.setText(pkgDetails.getString("DE"));
             name.setText(buyerDetails.getString("name"));
             contact.setText(buyerDetails.getString("contactNo"));
         } catch(org.json.JSONException e) {
