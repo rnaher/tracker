@@ -41,4 +41,14 @@
     <string name="track_button">Track</string>
     <string name="tracking">Tracking&#8230;</string>
     <string name="scan_update_pkg_old_status">Current Package Status:</string>
+    <string name="view_pkgs_menu">Associated Package ID\'s, Click for more</string>
+    <string name="pkg_det_menu">Package Details</string>
+    <string name="pkg_det_1">ID:</string>
+    <string name="pkg_det_2">Seller:</string>
+    <string name="pkg_det_3">Delivery Executive:</string>
+    <string name="pkg_det_4">Destination:</string>
+    <string name="pkg_det_menu2">Buyer\'s Details</string>
+    <string name="pkg_det_5">Name:</string>
+    <string name="pkg_det_6">Contact No:</string>
+    <string name="pkg_det_7">Status:</string>
 </resources>

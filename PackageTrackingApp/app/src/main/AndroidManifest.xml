@@ -45,10 +45,21 @@
         <activity
             android:name=".ViewPackagesActivity"
             android:parentActivityName=".DeliveryDashboard" />
-        <activity android:name=".SellerDashboard" />
-        <activity android:name=".AddPackageActivity" />
-        <activity android:name=".TrackPackage" />
-        <activity android:name=".TrackResultActivity"></activity>
+        <activity
+            android:name=".SellerDashboard"
+            android:parentActivityName=".LoginActivity" />
+        <activity
+            android:name=".AddPackageActivity"
+            android:parentActivityName=".SellerDashboard" />
+        <activity
+            android:name=".TrackPackage"
+            android:parentActivityName=".SellerDashboard" />
+        <activity
+            android:name=".TrackResultActivity"
+            android:parentActivityName=".SellerDashboard" />
+        <activity
+            android:name=".PackageDetailsActivity"
+            android:parentActivityName=".ViewPackagesActivity" />
     </application>
 
 </manifest>

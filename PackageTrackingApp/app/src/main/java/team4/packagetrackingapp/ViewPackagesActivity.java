@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.TableLayout;
@@ -23,6 +24,8 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class ViewPackagesActivity extends AppCompatActivity {
@@ -45,6 +48,7 @@ public class ViewPackagesActivity extends AppCompatActivity {
 
 //        String URL= "http://10.0.2.2:8080/app/packages/";
         URL = URL + username;
+        Log.e("sending GET to URL", URL);
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
 
@@ -77,49 +81,65 @@ public class ViewPackagesActivity extends AppCompatActivity {
                             } catch(org.json.JSONException e) {
                                 Log.e("json exception", "thrown while getting packages");
                             } catch(java.lang.NullPointerException e) {
-                                Log.e("NullPointerException", "thrown");
+                                Log.e("NullPointerException", "thrown while getting packages");
                             }
 
                             TableLayout pkgTable = findViewById(R.id.pkgsTable);
 
+                            String pkgID = null;
+                            final List<JSONObject> pkgs = new ArrayList<JSONObject>();
                             try {
                                 for (int i = 0; i < packages.length(); i++) {
+                                    Log.e("loop", Integer.toString(i));
+
                                     JSONObject pkg = packages.getJSONObject(i);
+                                    Log.e("package", "extracted from JSONArray");
+                                    pkgs.add(pkg);
+                                    Log.e("package", "added to list");
+
                                     Log.e("pkg", pkg.toString());
+
+                                    try {
+                                        pkgID = pkg.getString("packageID");
+                                    } catch(org.json.JSONException e) {
+                                        Log.e("json exception", "thrown getting pkgID");
+                                    } catch(java.lang.NullPointerException e) {
+                                        Log.e("NullPointerException", "thrown while getting pkgID");
+                                    }
 
                                     TableRow trow = new TableRow(ViewPackagesActivity.this);
 
-                                    TextView tv = new TextView(ViewPackagesActivity.this);
-                                    tv.setText(pkg.toString());
+/*                                    TextView tv = new TextView(ViewPackagesActivity.this);
+                                    tv.setText(pkg.toString());*/
 
-/*                                    Button pkgDetails = new Button(ViewPackagesActivity.this);
-                                    pkgDetails.setText(pkg.toString());*/
+                                    Button pkgDetails = new Button(ViewPackagesActivity.this);
+                                    pkgDetails.setId(i);
+                                    pkgDetails.setText(pkgID);
 
-                                    trow.addView(tv);
+                                    final int btn_id = pkgDetails.getId();
+
+                                    trow.addView(pkgDetails);
 
                                     pkgTable.addView(trow);
-                                }
 
-                                for (int i = 0; i < 100; i++) {
-                                    JSONObject pkg = packages.getJSONObject(0);
-                                    Log.e("pkg", pkg.toString());
+                                    Button btn = findViewById(btn_id);
+                                    btn.setOnClickListener(new View.OnClickListener() {
+                                        public void onClick(View view) {
+                                            Intent showDeets = new Intent(
+                                                    ViewPackagesActivity.this,
+                                                    PackageDetailsActivity.class);
 
-                                    HorizontalScrollView hsView = new
-                                            HorizontalScrollView(ViewPackagesActivity.this);
+                                            showDeets.putExtra("pkgDetails", pkgs.get(btn_id).toString());
+                                            Log.e("sending pkg", pkgs.get(btn_id).toString());
 
-                                    TableRow trow = new TableRow(ViewPackagesActivity.this);
-
-                                    TextView tv = new TextView(ViewPackagesActivity.this);
-                                    tv.setText(pkg.toString());
-                                    trow.addView(tv);
-
-                                    hsView.addView(trow);
-                                    pkgTable.addView(hsView);
+                                            startActivity(showDeets);
+                                        }
+                                    });
                                 }
                             } catch (org.json.JSONException e) {
                                 Log.e("json exception", "thrown while looping array");
                             } catch(java.lang.NullPointerException e) {
-                                Log.e("NullPointerException", "thrown");
+                                Log.e("NullPointerException", "thrown while looping array");
                             }
                         } else {
                             try {
