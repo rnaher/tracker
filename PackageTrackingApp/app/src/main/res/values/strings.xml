@@ -9,6 +9,7 @@
     <string name="reg_email_hint">Enter email ID</string>
     <string name="reg_user_hint">Pick a username</string>
     <string name="reg_pass_hint">Choose a password</string>
+    <string name="seller_id_hint">Enter seller_id(if DE is selected)</string>
     <string name="register_usertype">User Type</string>
     <string name="reg_radio_seller">Seller</string>
     <string name="reg_radio_de">Delivery Executive</string>
