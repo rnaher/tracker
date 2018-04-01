@@ -8,5 +8,5 @@
   * Use <b>username</b>=`root` and <b>password</b>=`root` during installation of mysql server.
   * Create Database with <b>name</b> `store` and table with <b>name</b>=`DE` in it. [(helpful commands for trivial stuff)](https://www.a2hosting.in/kb/developer-corner/mysql/managing-mysql-databases-and-users-from-the-command-line)
 * <h>Request URL <h>
-  * Buyer / Seller can track package using this url (http://localhost:8080/AppServer/requests?pkgid=1). It will show the current location    of package on google map.It will find the corresponding DE for package and show the location of DE.
-  * Delivery Executive can update location of package using similar url (http://localhost:8080/AppServer/requests?deid=1&&lat=17.44798&&lng=78.34830). Such call will update location of DE with given deid to given latitude and longitude.
+  * Buyer / Seller can track package using this url (http://localhost:8088/AppServer/requests?pkgid=1). It will show the current location    of package on google map.It will find the corresponding DE for package and show the location of DE.
+  * Delivery Executive can update location of package using similar url (http://localhost:8088/AppServer/requests?deid=1&&lat=17.44798&&lng=78.34830). Such call will update location of DE with given deid to given latitude and longitude.
