@@ -28,4 +28,8 @@ public class SellerDashboard extends AppCompatActivity {
         Intent intent = new Intent(this, ViewPackagesActivity.class);
         startActivity(intent);
     }
+    public void viewNotifications(View view) {
+        Intent intent = new Intent(this, viewNotifications.class);
+        startActivity(intent);
+    }
 }

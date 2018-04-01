@@ -28,6 +28,7 @@
     <string name="de_seller_3">View All Packages</string>
     <string name="list_DE">List DE</string>
     <string name="notifications">Notifications</string>
+    <string name="notifications_title">Notifications</string>
     <string name="profile">Profile</string>
     <string name="scan_update_1">Package ID</string>
     <string name="scan_update_2">Package Status</string>
