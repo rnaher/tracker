@@ -79,7 +79,7 @@ def addPackage(username):
 		users = mongo.db.users
 		user = users.find_one({"username" :username})
 		request.json['sellerID']=user['_id']
-		request.json['status']="not assigned"
+		request.json['status']="In warehouse"
 		packages.insert(request.json)
 		output = {'error_code':'000','message' : 'package added successfully'}
 		print("\n[INFO] Registration successfully...!!!")
