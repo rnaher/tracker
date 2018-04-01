@@ -52,4 +52,6 @@
     <string name="pkg_det_5">Name:</string>
     <string name="pkg_det_6">Contact No:</string>
     <string name="pkg_det_7">Status:</string>
+    <string name="de_dash_3">Share Location</string>
+    <string name="track_result_loc">View Location (Webpage)</string>
 </resources>

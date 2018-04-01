@@ -32,4 +32,9 @@ public class DeliveryDashboard extends AppCompatActivity {
         Intent intent = new Intent(this, ViewPackagesActivity.class);
         startActivity(intent);
     }
+
+    public void shareLocation(View view) {
+        Intent intent = new Intent(this, DeliveryExecutive.class);
+        startActivity(intent);
+    }
 }

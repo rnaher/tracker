@@ -1,10 +1,13 @@
 package team4.packagetrackingapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -118,6 +121,20 @@ public class TrackResultActivity extends AppCompatActivity {
         requestQueue.add(objectRequest);
     }
 
+    /** Called when user taps View Location button */
+    public void viewLocation(View view) {
+        SharedPreferences sP= getSharedPreferences(MainActivity.HOST_Config, Context.MODE_PRIVATE);
 
+        String hostIP= sP.getString("HOST_IP",null);
+        String packageID= getIntent().getExtras().getString("packageID");
+        String URL = "http://"+hostIP+":"+"8088"+"/AppServer/requests?pkgid="+packageID;
+        Log.e("url used for view loc", URL);
+
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.setData(Uri.parse(URL));
+        startActivity(intent);
+    }
 
 }

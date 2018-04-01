@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -60,6 +61,11 @@ public class DeliveryExecutive extends AppCompatActivity {
     }
 
     private void connect_server() {
+        SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.MyPREFERENCES,
+                Context.MODE_PRIVATE);
+        String username = sharedPreferences.getString("username", null);
+        Log.e("username (sharedprefs)", username);
+
         Log.e("function", "entered");
 //        final TextView mTextView = (TextView) findViewById(R.id.coordinates_tv);
 // ...
@@ -67,12 +73,12 @@ public class DeliveryExecutive extends AppCompatActivity {
 // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
         String ip="192.168.43.42";
-        String port="8080";
+        String port="8088";
         String pkgid="1";
         String lat=Latitude;//"17.44798";
         String lng=Longitude;//"78.34830";
-        String url ="http://"+ip+":"+port+"/AppServer/requests?pkgid="+pkgid+"&&lat="+lat+"&&lng="+lng;
-
+        String url ="http://"+ip+":"+port+"/AppServer/requests?deid="+username+"&&lat="+lat+"&&lng="+lng;
+        Log.e("URL created", url);
 
         Log.i(lat,"lat info");
 
@@ -82,6 +88,7 @@ public class DeliveryExecutive extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        Log.e("Response:", response);
                         // Display the first 500 characters of the response string.
 //                        mTextView.setText("Response is: "+ response.substring(0,500));
                     }
