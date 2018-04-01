@@ -7,7 +7,7 @@ from flask import request
 from flask_pymongo import PyMongo
 from flask_bcrypt import Bcrypt
 from bson import ObjectId  
-
+import datetime
 import pprint  
 
 app = Flask(__name__)
@@ -116,17 +116,36 @@ def checkPackageStatus(packageID,username):
 
 
 # update status
-@app.route('/app/update/<int:packageID>', methods=['PUT'])
-def updatePackageStatus(packageID):
+@app.route('/app/update/<int:packageID>/<string:username>', methods=['PUT'])
+def updatePackageStatus(packageID,username):
 	print("[DEBUG] update status Request :\n",request.json)
 	# reqUsername = request.json['username']
 	
-	newStatus = request.json['status']
-	try:
-		packages = mongo.db.packages
-		users = mongo.db.users
-		reqUser =  users.find_one({'username' : request.json['username']})
+	# create event
+	try :
 
+		packages=mongo.db.packages
+		pack_id=packages.find_one({'packageID':packageID},{'_id':1})
+		if pack_id == None:
+			output = { "error_code": "010", "message": "package details do not exist in system"}
+			return jsonify({'Response' : output})
+		request.json["packageID"]=packageID
+		users =mongo.db.users
+		reqUser = users.find_one({'username' : username})
+		request.json["userID"]=reqUser['_id']
+		request.json["timeStamp"]=datetime.datetime.utcnow()
+		print (request.json["timeStamp"])
+
+		events=mongo.db.events
+
+		new_event_id=events.insert(request.json)
+		new_event= events.find_one({'_id': new_event_id })
+		packages.update({"packageID" :packageID},{'$push':{'event_list':new_event_id }})
+		newStatus = request.json['status']
+
+		#  TODO : user does not exist case
+
+		# output = { "error_code": "000","message": "event created successfully","eventID":str(new_event_id),"time_stamp":str(new_event["timeStamp"])}
 		packages.update_one(
 			{'packageID' : packageID},
 			{
@@ -153,6 +172,55 @@ def updatePackageStatus(packageID):
 	return jsonify({'Response' : output})
 
 # track package
+@app.route('/app/track/<int:packageID>/<string:username>', methods=['GET'])
+def trackPackage(packageID,username):
+	print("[DEBUG] track package :")
+	try:
+		packages = mongo.db.packages
+		package_events=packages.find_one({'packageID':packageID},{'event_list':1})
+		# print package_events
+		if package_events == None:
+			# print ("Package details do not exist in system")
+			output = { "error_code": "010", "message": "Package details do not exist in system"}
+			return jsonify({'Response' : output})
+
+		if "event_list" not in package_events:
+			print ("no events found for the package")
+			output = { "error_code": "010", "message": "no events found for the package"}
+			return jsonify({'Response' : output})
+
+		count = len(package_events["event_list"])
+		details = []
+		events = mongo.db.events
+
+		for event_ID in  package_events["event_list"]:
+			detail={}
+			# print("event_ID:", event_ID)
+			event = events.find_one({'_id':event_ID})
+			detail['status']=event['status']
+			detail['timeStamp']=event['timeStamp']
+			
+			users = mongo.db.users
+			Updated_by=users.find_one({'_id': event['userID']})
+			detail['Updated By']=Updated_by['name']
+
+			details.append(detail)
+
+		# print(details)
+		print("\n[INFO] track package successful ... ")
+
+		output = { "error_code": "000","count":count,"details":details}
+		# if len(event_list) ==0:
+		# 	output = { "error_code": "010", "message": "Package details do not exist in system or no events found for the package"}
+			
+	except Exception, e:
+		print (e.message)
+		print("\n[ERROR] update status Failed...!!!")
+		output = { "error_code": "010", "message": "Package details do not exist in system"}
+	
+	return jsonify({'Response' : output})
+
+
 
 
 # contact DE
@@ -292,9 +360,51 @@ def addDE(username):
 	except Exception, e:
 		print (e.message)
 		print("\n[ERROR]] check status Failed...!!!")
-		output = { "error_code": "010", "message": "Package details do not exist in system"}
+		output = { "error_code": "010", "message": "add DE failed"}
 
 	return jsonify({'Response' : output})
+
+# delete DE:
+
+# create event
+@app.route('/app/event/<int:packageID>/<string:username>', methods=['POST'])
+def createEvent(packageID,username):
+	print("[DEBUG] create event ")
+	output =""
+	try:
+		request.json["packageID"]=packageID
+
+		packages=mongo.db.packages
+		pack_id=packages.find_one({'packageID':packageID},{'_id':1})
+		
+		if pack_id == None:
+			output = { "error_code": "010", "message": "package details do not exist in system"}
+			raise Exception()
+		users =mongo.db.users
+		user = users.find_one({'username' : username})
+		request.json["userID"]=user['_id']
+		request.json["timeStamp"]=datetime.datetime.utcnow()
+		print (request.json["timeStamp"])
+
+		events=mongo.db.events
+
+		new_event_id=events.insert(request.json)
+		new_event= events.find_one({'_id': new_event_id })
+		packages.update({"packageID" :packageID},{'$push':{'event_list':new_event_id }})
+
+		#  TODO : user does not exist case
+
+		output = { "error_code": "000","message": "event created successfully","eventID":str(new_event_id),"time_stamp":str(new_event["timeStamp"])}
+
+	except Exception, e:
+
+		print (e.message)
+		print("\n[ERROR]] check status Failed...!!!")
+		if len(output)==0:
+			output = { "error_code": "010", "message": "create event failed"}
+
+	return jsonify({'Response' : output})
+
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0',debug=True, port = 8080)

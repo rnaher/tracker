@@ -19,7 +19,7 @@ public class SellerDashboard extends AppCompatActivity {
     }
     /** Called when the user taps the Add Package button */
     public void trackPackage(View view) {
-        Intent intent = new Intent(this, AddPackageActivity.class);
+        Intent intent = new Intent(this, TrackPackage.class);
         startActivity(intent);
     }
 

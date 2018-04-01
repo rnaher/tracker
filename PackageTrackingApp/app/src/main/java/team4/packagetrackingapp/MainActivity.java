@@ -11,8 +11,8 @@ import android.widget.EditText;
 public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "team4.packagetrackingapp.MESSAGE";
     public static final String HOST_Config = "hostconfigs";
-  //  public static final String HOST_IP = "192.168.43.167";
-    public static final String HOST_IP = "10.0.2.2";
+    public static final String HOST_IP = "10.3.0.147";
+//    public static final String HOST_IP = "10.0.2.2";
 
     public static final String HOST_PORT = "8080";
 
