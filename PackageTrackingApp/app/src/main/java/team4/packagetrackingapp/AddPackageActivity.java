@@ -28,13 +28,13 @@ import java.util.Objects;
 
 public class AddPackageActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 
-    private TextView contentTxt;
+    private EditText contentTxt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_package);
-        contentTxt = (TextView)findViewById(R.id.packageField);
+        contentTxt = (EditText)findViewById(R.id.packageField);
     }
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id){
@@ -62,16 +62,21 @@ public class AddPackageActivity extends AppCompatActivity implements AdapterView
     /** Called when user taps submit button */
     public void submitPackage(View view) {
         // need to ensure constraints on email ID, pw etc.
+        Log.e("checking "," function started");
 
         EditText package_name = findViewById(R.id.packageField);
         EditText destination = findViewById(R.id.destinationField);
         EditText buyer = findViewById(R.id.buyerField);
         EditText contact = findViewById(R.id.contactField);
-        Package newPackage = new Package(package_name.getText().toString(), destination.getText().toString());
-//        newUser.show();
+        Log.e("checking "," function started");
+
+//        Package newPackage = new Package(Integer.parseInt(package_name.getText().toString()), destination.getText().toString());
+        Log.e("checking "," function started");
+
+        //        newUser.show();
 
         Gson gson = new Gson();
-        String newPackage_jsonString = gson.toJson(newPackage);
+//        String newPackage_jsonString = gson.toJson(newPackage);
 
         JSONObject newPackage_json = new JSONObject();
         JSONObject buyer_json = new JSONObject();
@@ -83,11 +88,12 @@ public class AddPackageActivity extends AppCompatActivity implements AdapterView
         }
         */
         try {
-            newPackage_json.put("packageID", package_name.getText().toString());
+            newPackage_json.put("packageID", Double.parseDouble(package_name.getText().toString()));
             buyer_json.put("name", buyer.getText().toString());
             buyer_json.put("contactNo", contact.getText().toString());
             newPackage_json.put("Buyer_details", buyer_json);
-            newPackage_json.put("destiation", destination.getText().toString());
+            newPackage_json.put("destination", destination.getText().toString());
+            Log.e("request",newPackage_json.toString());
         }catch(org.json.JSONException e) {
             Log.e("JSON Object creation", "failed");
         }
@@ -140,7 +146,7 @@ public class AddPackageActivity extends AppCompatActivity implements AdapterView
                                     Toast.LENGTH_LONG).show();
                         }
 
-                        Intent intent = new Intent(AddPackageActivity.this, MainActivity.class);
+                        Intent intent = new Intent(AddPackageActivity.this, SellerDashboard.class);
                         startActivity(intent);
                     }
                 },
@@ -156,12 +162,12 @@ public class AddPackageActivity extends AppCompatActivity implements AdapterView
 
 
     /** Called when the user taps the scan barcode button */
-    /*
+
     public void scan_Barcode(View view) {
         IntentIntegrator scanIntegrator = new IntentIntegrator(this);
         scanIntegrator.initiateScan();
 
-        EditText pkg_ID = findViewById(R.id.newpkgIDField);
+        EditText pkg_ID = findViewById(R.id.packageField);
 
         TextView pkgIDView = findViewById(R.id.pkgIDView);
 //        pkgIDView.setText(pkg_ID.getText().toString());
@@ -182,6 +188,6 @@ public class AddPackageActivity extends AppCompatActivity implements AdapterView
             toast.show();
         }
     }
-    */
+
 
 }

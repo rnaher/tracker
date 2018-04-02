@@ -36,6 +36,9 @@ def addUser():
 
 		# new_user = users.find_one({'_id': user_id })
 		output = {'error_code':'000','message' : 'New user created successfully', 'user_id' : str(user_id)}
+		if request.json['user_type']=='de':
+			users.update({'_id':request.json['seller_id']},{'$push':{'DE_list':DEuser_id }})
+			
 		print("\n[INFO] Registration successfully...!!!")
 	
 	except Exception, e:

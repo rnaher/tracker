@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 /**
  * Created by sagnihotri on 29-03-2018.
@@ -27,7 +28,7 @@ public class GPS_Service extends Service {
 
     @Override
     public void onCreate() {
-
+        Log.e("service", "started");
         listener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {

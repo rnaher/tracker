@@ -127,7 +127,7 @@ public class TrackResultActivity extends AppCompatActivity {
 
         String hostIP= sP.getString("HOST_IP",null);
         String packageID= getIntent().getExtras().getString("packageID");
-        String URL = "http://"+hostIP+":"+"8088"+"/AppServer/requests?pkgid="+packageID;
+        String URL = "http://"+"192.168.43.42"+":"+"8088"+"/AppServer/requests?pkgid="+packageID;
         Log.e("url used for view loc", URL);
 
         Intent intent = new Intent();

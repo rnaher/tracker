@@ -29,7 +29,7 @@
     <string name="list_DE">List DE</string>
     <string name="notifications">Notifications</string>
     <string name="notifications_title">Notifications</string>
-    <string name="profile">Profile</string>
+    <string name="profile">Edit Profile</string>
     <string name="scan_update_1">Package ID</string>
     <string name="scan_update_2">Package Status</string>
     <string name="scan_update_barcode_button">Use Barcode</string>

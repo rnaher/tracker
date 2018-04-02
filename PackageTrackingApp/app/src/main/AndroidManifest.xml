@@ -60,6 +60,9 @@
         <activity
             android:name=".PackageDetailsActivity"
             android:parentActivityName=".ViewPackagesActivity" />
+        <activity
+            android:name=".viewNotifications"
+            android:parentActivityName=".SellerDashboard" />
     </application>
 
 </manifest>
