@@ -65,7 +65,8 @@ public class AddPackageActivity extends AppCompatActivity implements AdapterView
 
         EditText package_name = findViewById(R.id.packageField);
         EditText destination = findViewById(R.id.destinationField);
-
+        EditText buyer = findViewById(R.id.buyerField);
+        EditText contact = findViewById(R.id.contactField);
         Package newPackage = new Package(package_name.getText().toString(), destination.getText().toString());
 
 //        newUser.show();
@@ -73,12 +74,28 @@ public class AddPackageActivity extends AppCompatActivity implements AdapterView
         Gson gson = new Gson();
         String newPackage_jsonString = gson.toJson(newPackage);
 
-        JSONObject newPackage_json = null;
+        JSONObject newPackage_json = new JSONObject();
+        JSONObject buyer_json = new JSONObject();
+        /*
         try {
             newPackage_json = new JSONObject(newPackage_jsonString);
         }catch(org.json.JSONException e) {
             Log.e("JSON object creation", "failed");
         }
+        */
+        try {
+            newPackage_json.put("packageID", package_name.getText().toString());
+            buyer_json.put("name", buyer.getText().toString());
+            buyer_json.put("contactNo", contact.getText().toString());
+            newPackage_json.put("Buyer_details", buyer_json);
+            newPackage_json.put("destiation", destination.getText().toString());
+        }catch(org.json.JSONException e) {
+            Log.e("JSON Object creation", "failed");
+        }
+
+
+
+
 
 
         SharedPreferences sharedPreferences= getSharedPreferences(MainActivity.HOST_Config, Context.MODE_PRIVATE);
