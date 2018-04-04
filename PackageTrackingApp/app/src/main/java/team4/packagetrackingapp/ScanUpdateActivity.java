@@ -48,8 +48,8 @@ public class ScanUpdateActivity extends AppCompatActivity implements AdapterView
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.status_options, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        status_options.setAdapter(adapter);
-        contentTxt = (TextView)findViewById(R.id.pkgIDField);*/
+        status_options.setAdapter(adapter);*/
+        contentTxt = (TextView)findViewById(R.id.pkgIDField);
 
 
 //        scanBtn.setOnClickListener(this);

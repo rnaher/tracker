@@ -283,10 +283,20 @@ def updatePackageStatus(packageID,username):
 
 		new_event_id=events.insert(form)
 		# new_event= events.find_one({'_id': new_event_id })
-		packages.update({"packageID" :packageID},{'$push':{'event_list':new_event_id }})
+		# packages.update({"packageID" :packageID},{'$push':{'event_list':new_event_id }})
+
 		newStatus = request.json['status']
 
 		if user_type =='seller':
+			packages.update_one(
+				{"$and":[{'packageID' : packageID},{'sellerID':user['_id']}]},
+				{
+					'$push':{
+						'event_list':new_event_id 
+						}
+				}
+			)
+
 			packages.update_one(
 				{"$and":[{'packageID' : packageID},{'sellerID':user['_id']}]},
 				{
@@ -300,6 +310,14 @@ def updatePackageStatus(packageID,username):
 			# package = packages.find_one({"$and":[{'packageID' : packageID},{'sellerID':user['_id']}]})
 
 		elif user_type =='de':
+			packages.update_one(
+				{"$and":[{'packageID' : packageID},{'sellerID':user['seller_id']}]},
+				{
+					'$push':{
+						'event_list':new_event_id 
+						}
+				}
+			)
 			packages.update_one(
 				{"$and":[{'packageID' : packageID},{'sellerID':user['seller_id']}]},
 				{
@@ -344,7 +362,7 @@ def updatePackageStatus(packageID,username):
 			data['packageID']=packageID
 			data['seen']=False
 			users= mongo.db.users
-			data["seller_id"]=newStatus
+			data["seller_id"]=package['sellerID']
 
 			notifications=mongo.db.notifications
 			notifications.insert(data)
@@ -548,7 +566,7 @@ def all_packages(username):
 			package_list=packages.find({'deID':user['_id']})
 
 		if (package_list.count())==0:
-			output = {  "error_code": "010","packages":"No packages found"} 
+			output = {  "error_code": "010","message":"No packages found"} 
 			return jsonify({'Response' : output})
 
 
@@ -603,7 +621,7 @@ def get_one_packages(packageID, username):
 			package=packages.find_one({"$and":[{'packageID':packageID},{'deID':user['_id']}]})
 
 		if package==None:
-			output = {  "error_code": "010","packages":"No packages found"} 
+			output = {  "error_code": "010","message":"No packages found"} 
 			return jsonify({'Response' : output})
 
 		# package = packages.find_one({'packageID':packageID},{'_id':0})
@@ -773,7 +791,43 @@ def getProfile(username):
 def editProfile(username):
 	print("[DEBUG] edit profile request ")
 	try:
-		pass
+		users = mongo.db.users
+		user = users.find_one({'username' : username})
+		profile = {}
+
+		profile['name']=request.json['name']
+		profile['contact_no']=request.json['contact_no']
+		profile['email_id']=request.json['email_id']
+		profile['username']=request.json['username']
+		if len(request.json['password']) != 0:
+			profile['password']=bcrypt.generate_password_hash(request.json['password'])
+		
+			users.update_one(
+				{'username' : username},
+				{
+					"$set": {
+						'name':profile['name'],
+						'contact_no':profile['contact_no'],
+						'email_id':profile['email_id'],
+						'username':profile['username'],
+						'password':profile['password']
+					}
+				}
+			)
+		else: 
+			users.update_one(
+				{'username' : username},
+				{
+					"$set": {
+						'name':profile['name'],
+						'contact_no':profile['contact_no'],
+						'email_id':profile['email_id'],
+						'username':profile['username']
+					}
+				}
+			)
+		print ('[INFO] profile edited successfully')
+		output = { "error_code": "000", "message":  "Updated successfully"}
 	except Exception, e:
 
 		print (e.message)
