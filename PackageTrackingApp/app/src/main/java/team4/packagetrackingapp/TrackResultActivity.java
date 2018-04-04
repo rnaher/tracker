@@ -29,9 +29,79 @@ import android.widget.ProgressBar;
 
 public class TrackResultActivity extends AppCompatActivity {
 
+    public void populate_current_status() {
+        SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.MyPREFERENCES,
+                Context.MODE_PRIVATE);
+        String username = sharedPreferences.getString("username", null);
+
+        SharedPreferences sP= getSharedPreferences(MainActivity.HOST_Config, Context.MODE_PRIVATE);
+
+        String hostIP= sP.getString("HOST_IP",null);
+        String hostPort= sP.getString("HOST_PORT",null);
+        String packageID= getIntent().getExtras().getString("packageID");
+        String URL = "http://"+hostIP+":"+hostPort+"/app/status/"+packageID+"/"+username;
+        System.out.println(URL);
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        JsonObjectRequest objectRequest = new JsonObjectRequest(
+                Request.Method.GET,
+                URL,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String status = null;
+
+                        JSONObject response_jsonObj = null;
+                        String code = null, msg = null;
+                        Log.e("Rest Response", response.toString());
+
+                        try {
+                            response_jsonObj = response.getJSONObject("Response");
+                            code = response_jsonObj.getString("error_code");
+                        } catch(org.json.JSONException e) {
+                            Log.e("json exception", "thrown");
+                        }
+
+                        if(Objects.equals(code, "000")) {
+
+                            try {
+                                status = response_jsonObj.getString("status");
+                            } catch(org.json.JSONException e) {
+                                Log.e("json exception", "thrown");
+                            } catch(java.lang.NullPointerException e) {
+                                Log.e("NullPointerException", "thrown");
+                            }
+
+                            TextView statusView = findViewById(R.id.statusField);
+                            statusView.setText(status);
+                        } else {
+                            try {
+                                msg = response_jsonObj.getString("message");
+                            } catch(org.json.JSONException e) {
+                                Log.e("json exception", "thrown");
+                            } catch(java.lang.NullPointerException e) {
+                                Log.e("NullPointerException", "thrown");
+                            }
+
+                            Toast.makeText(getApplicationContext(), msg,
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Rest Error", error.toString());
+                    }
+                });
+
+        requestQueue.add(objectRequest);
+    }
+
     private int progressStatus = 0;
     @Override
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track_result);
@@ -47,6 +117,9 @@ public class TrackResultActivity extends AppCompatActivity {
         String packageID= getIntent().getExtras().getString("packageID");
         String URL = "http://"+hostIP+":"+hostPort+"/app/track/"+packageID+"/"+username;
         System.out.println(URL);
+
+        populate_current_status();
+
         RequestQueue requestQueue = Volley.newRequestQueue(this);
 
         JsonObjectRequest objectRequest = new JsonObjectRequest(
