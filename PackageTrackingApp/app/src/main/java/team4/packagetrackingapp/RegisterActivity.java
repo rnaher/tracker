@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.RadioButton;
 import android.widget.Toast;
 import android.text.TextUtils;
@@ -35,6 +36,8 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
     }
 
+
+
     /** Called when user taps submit button */
     public void submitRegistration(View view) {
         // need to ensure constraints on email ID, pw etc.
@@ -44,6 +47,24 @@ public class RegisterActivity extends AppCompatActivity {
         EditText email = findViewById(R.id.emailField);
         EditText username = findViewById(R.id.userField);
         EditText password = findViewById(R.id.passField);
+
+        //final EditText emailValidate = (EditText)findViewById(R.id.textMessage);
+
+        //final TextView textView = (TextView)findViewById(R.id.nameField);
+
+        String email2 = email.getText().toString().trim();
+
+        String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+
+// onClick of button perform this simplest code.
+        if (email2.matches(emailPattern))
+        {
+            Toast.makeText(getApplicationContext(),"valid email address",Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(),"Invalid email address", Toast.LENGTH_SHORT).show();
+        }
 
 
         RadioButton seller = findViewById(R.id.sellerButton);
