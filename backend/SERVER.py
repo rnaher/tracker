@@ -32,7 +32,7 @@ def addUser():
 		# TODO: unique username
 		form['username']=request.json['username']
 
-		prev_user=users.find({'username':form['username']})
+		prev_user=users.find_one({'username':form['username']})
 		
 
 		if prev_user != None :
@@ -117,20 +117,26 @@ def addPackage(username):
 	print("[DEBUG] Check status Request :\n",request.json)
 	form={}
 	try:
-		# check the username is of a seller
+		print("check the username exists")
 		users = mongo.db.users
 		user = users.find_one({"username" :username})
+		if user==None :
+			print("\n[ERROR] User does not exist. Add package Failed...!!!")
+			output = {'error_code':'100','message' : 'User does not exist. Add package Failed. Access denied'}
+			return jsonify({'Response' : output})
+
+		print("check the user is seller")
 		if user['user_type']!='seller':
 			print("\n[ERROR] User should be a seller. Add package Failed...!!!")
 			output = {'error_code':'100','message' : 'User should be a seller. Add package Failed. Access denied'}
 			return jsonify({'Response' : output})
 
-		# check unique packageID
+		print("check unique packageID")
 		form['packageID']= request.json['packageID']
 		form['sellerID']= user['_id']
 		packages = mongo.db.packages
 
-		old_packs=packages.find({"$and": [{'packageID':form['packageID']},{'sellerID':form['sellerId']}]})
+		old_packs=packages.find_one({"$and": [{'packageID':form['packageID']},{'sellerID':form['sellerID']}]})
 
 		if old_packs != None :
 			print("\n[ERROR] package aleady exists. add package Failed...!!!")
@@ -604,6 +610,34 @@ def getNotification(username):
 	return jsonify({'Response' : output})
 
 # get profile
+@app.route('/app/profile/<string:username>',methods=['GET'])
+def getProfile(username):
+	print("[DEBUG] get profile request ")
+	try:
+		users = mongo.db.users
+		user = users.find_one({'username' : username})
+		profile = {}
+
+		profile['_id']=str(user['_id'])
+		profile['name']=user['name']
+		profile['contact_no']=user['contact_no']
+		profile['email_id']=user['email_id']
+		profile['username']=user['username']
+		profile['user_type']=user['user_type']
+
+		output = { "error_code": "000","profile":profile}
+
+	except Exception, e:
+
+		print (e.message)
+		print("\n[ERROR]] get notification Failed...!!!")
+		output = { "error_code": "100", "message":  "not found"}
+
+	return jsonify({'Response' : output})
+
+
+
+
 # edit profile
 
 
