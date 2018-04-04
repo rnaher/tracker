@@ -1,8 +1,10 @@
 package team4.packagetrackingapp;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import org.json.JSONObject;
@@ -47,5 +49,29 @@ public class PackageDetailsActivity extends AppCompatActivity {
         } catch(java.lang.NullPointerException e) {
             Log.e("NullPointerException", "thrown");
         }
+    }
+
+    public void trackPackage(View view) {
+        String pkgDetails_string = getIntent().getStringExtra("pkgDetails");
+
+        JSONObject pkgDetails = null;
+        try {
+            pkgDetails = new JSONObject(pkgDetails_string);
+        } catch(org.json.JSONException e) {
+            Log.e("JSONException", "thrown");
+        }
+
+        Intent intent = new Intent(this, TrackResultActivity.class);
+
+        try {
+            intent.putExtra("packageID", pkgDetails.getString("packageID"));
+            Log.e("tracking pkgID", pkgDetails.getString("packageID"));
+        } catch(org.json.JSONException e) {
+            Log.e("JSONException", "thrown");
+        } catch(java.lang.NullPointerException e) {
+            Log.e("NullPointerException", "thrown");
+        }
+
+        startActivity(intent);
     }
 }
