@@ -20,41 +20,74 @@ app.config['MONGO_URI'] = 'mongodb://localhost:27017/track_package'
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
 
-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ 
 # Registration Request
 @app.route('/app/registration', methods=['POST'])
 def addUser():
 	print("[DEBUG] Registration Request :\n",request.json)
+	form={}
 	try:
 		users = mongo.db.users
-		# customer_id = customers.insert({'first_name': first_name, 'last_name': last_name})
-		if request.json['user_type']=='de':
-			request.json['seller_id']=ObjectId(request.json['seller_id'])
-		request.json['password']=bcrypt.generate_password_hash(request.json['password'])
 		
-		user_id = users.insert(request.json)
+		# TODO: unique username
+		form['username']=request.json['username']
 
-		# new_user = users.find_one({'_id': user_id })
+		prev_user=users.find({'username':form['username']})
+		
+
+		if prev_user != None :
+			print("\n[ERROR] Username aleady exists. Registration Failed...!!!")
+			output = {'error_code':'011','message' : 'Username aleady exists. Registration Failed'}
+			return jsonify({'Response':output})
+
+		form['name']=request.json['name']
+		form['contact_no']=request.json['contact_no']
+		form['email_id']=request.json['email_id']
+		
+		form['password']=bcrypt.generate_password_hash(request.json['password'])
+		form['user_type']=request.json['user_type']
+
+		if form['user_type'] =='de':
+			form['seller_id']=ObjectId(request.json['seller_id'])
+			# check the seller exists or not
+			try:
+				seller=users.find_one({'_id':form['seller_id']})
+			except Exception, e:
+				print(e.message)
+				print("\n[ERROR] Incorrect sellerID. Registration Failed...!!!")
+				output = {'error_code':'011','message' : 'Incorrect sellerID.. Registration Failed'}
+				return jsonify({'Response':output})
+
+		user_id = users.insert(form)
+
 		output = {'error_code':'000','message' : 'New user created successfully', 'user_id' : str(user_id)}
-		if request.json['user_type']=='de':
-			users.update({'_id':request.json['seller_id']},{'$push':{'DE_list':DEuser_id }})
+		if form['user_type']=='de':
+			users.update({'_id':form['seller_id']},{'$push':{'DE_list':user_id }})
 			
 		print("\n[INFO] Registration successfully...!!!")
 	
 	except Exception, e:
 		print (e.message)
-		print("\n[ERROR]] Registration Failed...!!!")
-		output = {'error_code':'010','message' : 'New user creation failed'}
+		print("\n[ERROR] Registration Failed...!!!")
+		output = {'error_code':'010','message' : 'Registration failed'}
 
 	return jsonify({'Response' : output})
 
-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ 
 # Login Request
 @app.route('/app/login', methods=['POST'])
 def userLogin():
 	print("[DEBUG] Login Request :\n",request.json)
-	reqUsername = request.json['username']
-	reqPassword = request.json['password']
+	try:
+		reqUsername = request.json['username']
+		reqPassword = request.json['password']
+
+	except Exception as e:
+		print (e.message)
+		print("\n[ERROR] Wrong/missing inputs. Login failed")
+		output={'error_code':'010','message' : 'Wrong/missing inputs. Login failed.'}
+		return jsonify({'Response' : output})
+
 	try:
 		users = mongo.db.users
 		user = users.find_one({'username' : reqUsername})
@@ -65,56 +98,104 @@ def userLogin():
 
 
 		else:
-			print("\n\n[INFO] Login failed ...Wrong password ...!!!")
-			output = {'error_code':'001','message' : 'Login failed ... Wrong password ...!!!'}
+			print("\n[INFO] Login failed. Wrong password.")
+			output = {'error_code':'001','message' : 'Login failed. Wrong password.'}
 
 		# TODO :  handle this case "message": "Your registration request is not accepted...contact your boss or try later"
-
-		print("\n[INFO] Login successfully...!!!")
 	
 	except Exception, e:
 		print (e.message)
-		print("\n[ERROR]] Login Failed...!!!")
-		output = {'error_code':'100','message' : 'Login Failed... User does not exist or password is incorrect'}
+		print("\n[ERROR] Login Failed...!!!")
+		output = {'error_code':'100','message' : 'Login Failed. User does not exist or password is incorrect'}
 
 	return jsonify({'Response' : output})
 
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ 
 # Add package
 @app.route('/app/package/<string:username>', methods=['POST'])
 def addPackage(username):
 	print("[DEBUG] Check status Request :\n",request.json)
+	form={}
 	try:
-		packages = mongo.db.packages
+		# check the username is of a seller
 		users = mongo.db.users
 		user = users.find_one({"username" :username})
-		request.json['sellerID']=user['_id']
-		request.json['status']="In warehouse"
-		packages.insert(request.json)
+		if user['user_type']!='seller':
+			print("\n[ERROR] User should be a seller. Add package Failed...!!!")
+			output = {'error_code':'100','message' : 'User should be a seller. Add package Failed. Access denied'}
+			return jsonify({'Response' : output})
+
+		# check unique packageID
+		form['packageID']= request.json['packageID']
+		form['sellerID']= user['_id']
+		packages = mongo.db.packages
+
+		old_packs=packages.find({"$and": [{'packageID':form['packageID']},{'sellerID':form['sellerId']}]})
+
+		if old_packs != None :
+			print("\n[ERROR] package aleady exists. add package Failed...!!!")
+			output = {'error_code':'011','message' : 'package aleady exists. add package Failed'}
+			return jsonify({'Response':output})
+
+		Buyer_details={}
+		Buyer_details['name']=request.json['Buyer_details']['name']
+		Buyer_details['contactNo']=request.json['Buyer_details']['contactNo']
+		form['Buyer_details']=Buyer_details
+		form['destination']=request.json['destination']
+		form['status']='In warehouse'
+
+		packages = mongo.db.packages
+		packages.insert(form)
 		output = {'error_code':'000','message' : 'package added successfully'}
 		print("\n[INFO] package added ...!!!")
 
 	except Exception, e:
 		print (e.message)
 		print("\n[ERROR]] Add package Failed...!!!")
-		output = {'error_code':'100','message' : 'add package Failed... Access denied'}
+		output = {'error_code':'010','message' : 'Add package Failed.'}
 
 	return jsonify({'Response' : output})
 
-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ 
 # Check status
 @app.route('/app/status/<int:packageID>/<string:username>', methods=['GET'])
 def checkPackageStatus(packageID,username):
 	print("[DEBUG] Check status Request ")
 	try:
+		# check user is seller or DE
+		users = mongo.db.users
+		user = users.find_one({"username" :username})
+		user_type =user['user_type']
+	except Exception, e:
+		print (e.message)
+		print("\n[ERROR]] User does not exist. check status Failed...!!!")
+		output = { "error_code": "010", "message": "User does not exists in system"}
+		return jsonify({'Response' : output})
+
+	try :
+
 		packages = mongo.db.packages
 		package = packages.find_one({'packageID' : packageID})
+
+		
+		if user_type =='seller' and user['_id']!=package['sellerID']:
+			print("\n[ERROR] Access denied...!!!")
+			output = {'error_code':'100','message' : 'Access denied'}
+			return jsonify({'Response' : output})
+
+		elif user_type=='de' and user['seller_id'] !=package['sellerID']:
+			print("\n[ERROR] Access denied...!!!")
+			output = {'error_code':'100','message' : 'Access denied'}
+			return jsonify({'Response' : output})
+
+		
 
 		output = { "error_code": "000","status":package['status']}
 
 	# TODO handle "message": "not authorized to access this details "
 	# TODO handle event value
 		
-		print("\n[INFO] package: ",packageID, "\t status ",package['status'])
+		print("\n[INFO] package: ",packageID, " status ",package['status'])
 
 	except Exception, e:
 		print (e.message)
@@ -123,50 +204,71 @@ def checkPackageStatus(packageID,username):
 
 	return jsonify({'Response' : output})
 
-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ 
 # update status
 @app.route('/app/update/<int:packageID>/<string:username>', methods=['PUT'])
 def updatePackageStatus(packageID,username):
 	print("[DEBUG] update status Request :\n",request.json)
 	# reqUsername = request.json['username']
 	
-	# create event
+	try:
+		# check user is seller or DE
+		users = mongo.db.users
+		user = users.find_one({"username" :username})
+		user_type =user['user_type']
+	except Exception, e:
+		print (e.message)
+		print("\n[ERROR]] User does not exist. check status Failed...!!!")
+		output = { "error_code": "010", "message": "User does not exists in system"}
+		return jsonify({'Response' : output})
+
 	try :
 
-		packages=mongo.db.packages
-		pack_id=packages.find_one({'packageID':packageID},{'_id':1})
-		if pack_id == None:
+		packages = mongo.db.packages
+		package=packages.find_one({'packageID':packageID},{'_id':1})
+
+		if package == None:
+			print("\n[ERROR]] package details do not exist. check status Failed...!!!")
 			output = { "error_code": "010", "message": "package details do not exist in system"}
 			return jsonify({'Response' : output})
-		request.json["packageID"]=packageID
-		users =mongo.db.users
-		reqUser = users.find_one({'username' : username})
-		request.json["userID"]=reqUser['_id']
-		request.json["timeStamp"]=datetime.datetime.utcnow()
-		print (request.json["timeStamp"])
+
+		if user_type =='seller' and user['_id']!=package['sellerID']:
+			print("\n[ERROR] Access denied...!!!")
+			output = {'error_code':'100','message' : 'Access denied'}
+			return jsonify({'Response' : output})
+
+		elif user_type=='de' and user['seller_id'] !=package['sellerID']:
+			print("\n[ERROR] Access denied...!!!")
+			output = {'error_code':'100','message' : 'Access denied'}
+			return jsonify({'Response' : output})
+
+
+	# create event
+		
+		form["packageID"]=packageID
+		form["status"]=request.json['status']
+		form["userID"]=user['_id']
+		form["timeStamp"]=datetime.datetime.utcnow()
+		print ("[INFO] ",form["timeStamp"])
 
 		# create events
 		events=mongo.db.events
 
-		new_event_id=events.insert(request.json)
-		new_event= events.find_one({'_id': new_event_id })
+		new_event_id=events.insert(form)
+		# new_event= events.find_one({'_id': new_event_id })
 		packages.update({"packageID" :packageID},{'$push':{'event_list':new_event_id }})
 		newStatus = request.json['status']
 
-		#  TODO : user does not exist case
-
-		# output = { "error_code": "000","message": "event created successfully","eventID":str(new_event_id),"time_stamp":str(new_event["timeStamp"])}
 		packages.update_one(
 			{'packageID' : packageID},
 			{
 				"$set": {
 					"status":newStatus,
 					"deID":reqUser['_id']
-					# TODO : add time stamp "HH:MM DD/MM/YYYY" & location 
 				}
 			}
 		)
-		# TODO: push package id into DE package list
+
 		package = packages.find_one({'packageID' : packageID})
 
 		print("\n[INFO] status updated ... \n [INFO] package: ",packageID, "\t status ",package['status'])
@@ -180,6 +282,7 @@ def updatePackageStatus(packageID,username):
 		print("\n[ERROR] update status Failed...!!!")
 		output = { "error_code": "010", "message": "Package details do not exist in system"}
 
+	# add notification
 	try:
 		print("[DEBUG] create notifications :")
 		# if request.json['status']=="Failed":
@@ -188,19 +291,16 @@ def updatePackageStatus(packageID,username):
 		data['packageID']=packageID
 		data['seen']=False
 		users= mongo.db.users
-		de = users.find_one({'username':username})
-		data["seller_id"]=de["seller_id"]
+		data["seller_id"]=package['sellerID']
 
 		notifications=mongo.db.notifications
 		notifications.insert(data)
 
-		print("\n[INFO] Notification added successfully")
-
-
+		print("[INFO] Notification added successfully")
 
 	except Exception, e:
 		print (e.message)
-		print("\n[ERROR] create notification Failed...!!!")
+		print("[ERROR] create notification Failed...!!!")
 
 	return jsonify({'Response' : output})
 
@@ -300,33 +400,49 @@ def contactBuyer(packageID,username):
 
 	return jsonify({'Response' : output})
 
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ 
 # View all packages
 @app.route('/app/packages/<string:username>', methods=['GET'])
 def all_packages(username):
 	print("[DEBUG] View all packages ")
 	try:
-		packages = mongo.db.packages
+
 		users= mongo.db.users
+		packages = mongo.db.packages
+		user = users.find_one({'username':username})
+		
+		if user['user_type']== 'seller':
+			package_list=packages.find({'sellerID':user['_id']})
+
+		elif user['user_type']== 'de':
+			package_list=packages.find({'deID':user['_id']})
+
+		if len(package_list)==0:
+			output = {  "error_code": "010","packages":"No packages found"} 
+			return jsonify({'Response' : output})
+
+
 		pack_list = []
-		for package in packages.find({},{'_id':0,'event_list':0}):
-			pprint.pprint(package)
+		for package in package_list:
+			pack["packageID"]=package["packageID"]
+			pack["status"]=package["status"]
+			pack["destination"]=package["destination"]
+			pack["destination"]=package["Buyer_details"]
+
 			if 'sellerID' in package:
 				seller=users.find_one({'_id': ObjectId(package['sellerID'])})
-				package['seller']=seller['name']
-				del package['sellerID']
+				pack['seller']=seller['name']
 			if "deID" in package:
 				DE=users.find_one({'_id': ObjectId(package['deID'])})
-				package['DE']=DE['name']
-				del package['deID']
-			pprint.pprint(package)
-			pack_list.append(package)
+				pack['DE']=DE['name']
+			else :
+				pack['DE']="none"
 
-		if len(pack_list)!=0:
+			pprint.pprint(pack)
+			pack_list.append(pack)
+
 			output = { "error_code": "000","packages":pack_list}
-		else:
-			output = {  "error_code": "010","packages":"No packages found"} 
-
-
+	
 	# TODO handle "message": "not authorized to access this details " & No packages found"
 
 	except Exception, e:
@@ -336,29 +452,47 @@ def all_packages(username):
 
 	return jsonify({'Response' : output})
 
-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # View one package details
 @app.route('/app/package/<int:packageID>/<string:username>', methods=['GET'])
 def get_one_packages(packageID, username):
 	print("[DEBUG] View one package details ")
 	try:
-		packages = mongo.db.packages
-		users= mongo.db.users
 
-		package = packages.find_one({'packageID':packageID},{'_id':0})
+		users= mongo.db.users
+		packages = mongo.db.packages
+		user = users.find_one({'username':username})
+		
+		if user['user_type']== 'seller':
+			package=packages.find_one({"$and":[{'packageID':packageID},{'sellerID':user['_id']}]})
+
+		elif user['user_type']== 'de':
+			package=packages.find_one(["$and":{'packageID':packageID},{'deID':user['_id']}])
+
+		if package==None:
+			output = {  "error_code": "010","packages":"No packages found"} 
+			return jsonify({'Response' : output})
+
+		# package = packages.find_one({'packageID':packageID},{'_id':0})
 		pprint.pprint(package)
+		pack["packageID"]=package["packageID"]
+		pack["status"]=package["status"]
+		pack["destination"]=package["destination"]
+		pack["destination"]=package["Buyer_details"]
+
 		if 'sellerID' in package:
 			seller=users.find_one({'_id': ObjectId(package['sellerID'])})
-			package['seller']=seller['name']
-			del package['sellerID']
+			pack['seller']=seller['name']
 		if "deID" in package:
 			DE=users.find_one({'_id': ObjectId(package['deID'])})
-			package['DE']=DE['name']
-			del package['deID']
-		pprint.pprint(package)
+			pack['DE']=DE['name']
+		else :
+			pack['DE']="none"
+		
+		pprint.pprint(pack)
 
 
-		output = { "error_code": "000","package":package}
+		output = { "error_code": "000","package":pack}
 
 	# TODO handle "message": "not authorized to access this details " & No packages found"
 
@@ -449,19 +583,10 @@ def getNotification(username):
 		notifications=mongo.db.notifications
 
 		notifn_list = []
-		for notification in notifications.find({'seller_id':user_id,"seen":{'$ne': True}},{'_id':0,'seller_id':0}):
+		for notification in notifications.find({"$and":[{'seller_id':user_id},'notification_data':'failed',{"seen":{'$ne': True}}]},{'_id':0,'seller_id':0}):
 			notifn_list.append(notification)
 
-		# notifications.update(
-		# 	{'seller_id':user_id,"seen":{'$ne': True}},
-		# 	{
-		# 		"$set": {
-		# 			"seen":True
-		# 			# TODO : add time stamp "HH:MM DD/MM/YYYY" & location 
-		# 		}
-		# 	},
-		# 	{"multi":True}
-		# )
+		
 		# TODO: only failed notifications are shown
 		# TODO: delete after find
 
@@ -478,6 +603,8 @@ def getNotification(username):
 
 	return jsonify({'Response' : output})
 
+# get profile
+# edit profile
 
 
 if __name__ == '__main__':
