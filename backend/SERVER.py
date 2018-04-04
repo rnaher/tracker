@@ -218,7 +218,7 @@ def updatePackageStatus(packageID,username):
 	# reqUsername = request.json['username']
 	
 	try:
-		# check user is seller or DE
+		print("check user is seller or DE")
 		users = mongo.db.users
 		user = users.find_one({"username" :username})
 		user_type =user['user_type']
@@ -229,9 +229,9 @@ def updatePackageStatus(packageID,username):
 		return jsonify({'Response' : output})
 
 	try :
-
+		print("check package exists or not")
 		packages = mongo.db.packages
-		package=packages.find_one({'packageID':packageID},{'_id':1})
+		package=packages.find_one({'packageID':packageID})
 
 		if package == None:
 			print("\n[ERROR]] package details do not exist. check status Failed...!!!")
@@ -250,7 +250,7 @@ def updatePackageStatus(packageID,username):
 
 
 	# create event
-		
+		form={}
 		form["packageID"]=packageID
 		form["status"]=request.json['status']
 		form["userID"]=user['_id']
@@ -270,7 +270,7 @@ def updatePackageStatus(packageID,username):
 			{
 				"$set": {
 					"status":newStatus,
-					"deID":reqUser['_id']
+					"deID":form["userID"]
 				}
 			}
 		)
@@ -289,24 +289,25 @@ def updatePackageStatus(packageID,username):
 		output = { "error_code": "010", "message": "Package details do not exist in system"}
 
 	# add notification
-	try:
-		print("[DEBUG] create notifications :")
-		# if request.json['status']=="Failed":
-		data={}
-		data["notification_data"]=request.json['status']
-		data['packageID']=packageID
-		data['seen']=False
-		users= mongo.db.users
-		data["seller_id"]=package['sellerID']
+	if package['status']=="Failed":
+		try:
+			print("[DEBUG] create notifications :")
+			# if request.json['status']=="Failed":
+			data={}
+			data["notification_data"]=request.json['status']
+			data['packageID']=packageID
+			data['seen']=False
+			users= mongo.db.users
+			data["seller_id"]=package['sellerID']
 
-		notifications=mongo.db.notifications
-		notifications.insert(data)
+			notifications=mongo.db.notifications
+			notifications.insert(data)
 
-		print("[INFO] Notification added successfully")
+			print("[INFO] Notification added successfully")
 
-	except Exception, e:
-		print (e.message)
-		print("[ERROR] create notification Failed...!!!")
+		except Exception, e:
+			print (e.message)
+			print("[ERROR] create notification Failed...!!!")
 
 	return jsonify({'Response' : output})
 
@@ -423,17 +424,19 @@ def all_packages(username):
 		elif user['user_type']== 'de':
 			package_list=packages.find({'deID':user['_id']})
 
-		if len(package_list)==0:
+		if (package_list.count())==0:
 			output = {  "error_code": "010","packages":"No packages found"} 
 			return jsonify({'Response' : output})
 
 
 		pack_list = []
+
 		for package in package_list:
+			pack={}
 			pack["packageID"]=package["packageID"]
 			pack["status"]=package["status"]
 			pack["destination"]=package["destination"]
-			pack["destination"]=package["Buyer_details"]
+			pack["Buyer_details"]=package["Buyer_details"]
 
 			if 'sellerID' in package:
 				seller=users.find_one({'_id': ObjectId(package['sellerID'])})
@@ -447,7 +450,8 @@ def all_packages(username):
 			pprint.pprint(pack)
 			pack_list.append(pack)
 
-			output = { "error_code": "000","packages":pack_list}
+		print("[INFO] view all successful")
+		output = { "error_code": "000","packages":pack_list}
 	
 	# TODO handle "message": "not authorized to access this details " & No packages found"
 
@@ -589,7 +593,7 @@ def getNotification(username):
 		notifications=mongo.db.notifications
 
 		notifn_list = []
-		for notification in notifications.find({"$and":[{'seller_id':user_id},{'notification_data':'failed'},{"seen":{'$ne': True}}]},{'_id':0,'seller_id':0}):
+		for notification in notifications.find({"$and":[{'seller_id':user_id},{'notification_data':'Failed'},{"seen":{'$ne': True}}]},{'_id':0,'seller_id':0}):
 			notifn_list.append(notification)
 
 		
@@ -610,7 +614,7 @@ def getNotification(username):
 	return jsonify({'Response' : output})
 
 # get profile
-@app.route('/app/profile/<string:username>',methods=['GET'])
+@app.route('/app/profile/<string:username>',methods=['PUT'])
 def getProfile(username):
 	print("[DEBUG] get profile request ")
 	try:
@@ -630,16 +634,24 @@ def getProfile(username):
 	except Exception, e:
 
 		print (e.message)
-		print("\n[ERROR]] get notification Failed...!!!")
+		print("\n[ERROR]] get profile Failed...!!!")
 		output = { "error_code": "100", "message":  "not found"}
 
 	return jsonify({'Response' : output})
 
-
-
-
 # edit profile
+@app.route('/app/profile/<string:username>',methods=['GET'])
+def editProfile(username):
+	print("[DEBUG] edit profile request ")
+	try:
+		pass
+	except Exception, e:
 
+		print (e.message)
+		print("\n[ERROR]] edit profile Failed...!!!")
+		output = { "error_code": "100", "message":  "not found"}
+
+	return jsonify({'Response' : output})
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0',debug=True, port = 8080)
