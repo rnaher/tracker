@@ -59,13 +59,20 @@ public class PackageDetailsActivity extends AppCompatActivity {
             contact.setText(buyerDetails.getString("contactNo"));
 
             this.packageID = pkgDetails.getString("packageID");
-
-            de.setText(pkgDetails.getString("DE"));
         } catch(org.json.JSONException e) {
             Log.e("JSONException", "thrown");
         } catch(java.lang.NullPointerException e) {
             Log.e("NullPointerException", "thrown");
         }
+
+        try {
+            de.setText(pkgDetails.getString("DE"));
+        } catch(org.json.JSONException e) {
+            de.setText("Not Assigned");
+            Log.e("JSONException", "thrown");
+        } catch(java.lang.NullPointerException e) {
+            Log.e("NullPointerException", "thrown");
+    }
     }
 
     public void trackPackage(View view) {
