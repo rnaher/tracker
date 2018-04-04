@@ -57,14 +57,12 @@ public class RegisterActivity extends AppCompatActivity {
         String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
 // onClick of button perform this simplest code.
-        if (email2.matches(emailPattern))
-        {
-            Toast.makeText(getApplicationContext(),"valid email address",Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
-            Toast.makeText(getApplicationContext(),"Invalid email address", Toast.LENGTH_SHORT).show();
-        }
+
+        //password validation
+        String pass2 = password.getText().toString().trim();
+
+
+
 
 
         RadioButton seller = findViewById(R.id.sellerButton);
@@ -85,6 +83,12 @@ public class RegisterActivity extends AppCompatActivity {
 
             Toast.makeText(getApplicationContext(), "User Name is empty", Toast.LENGTH_SHORT).show();
 
+        }
+        else if(pass2.length() <= 8){
+            Toast.makeText(getApplicationContext(),"Invalid Password",Toast.LENGTH_SHORT).show();
+        }
+        else if (!email2.matches(emailPattern)) {
+            Toast.makeText(getApplicationContext(), "Invalid email address", Toast.LENGTH_SHORT).show();
         }
         else if( TextUtils.isEmpty(name.getText())){
 
