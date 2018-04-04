@@ -33,8 +33,15 @@ public class DeliveryDashboard extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /** Called when the user taps the Share Location button */
     public void shareLocation(View view) {
         Intent intent = new Intent(this, DeliveryExecutive.class);
+        startActivity(intent);
+    }
+
+    /** Called when the user taps the Edit Profile button */
+    public void editProfile(View view) {
+        Intent intent = new Intent(this, EditProfileActivity.class);
         startActivity(intent);
     }
 }
