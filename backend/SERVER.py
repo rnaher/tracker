@@ -150,7 +150,7 @@ def addPackage(username):
 		form['destination']=request.json['destination']
 		form['status']='In warehouse'
 
-		packages = mongo.db.packages
+		# packages = mongo.db.packages
 		packages.insert(form)
 		output = {'error_code':'000','message' : 'package added successfully'}
 		print("\n[INFO] package added ...!!!")
@@ -361,14 +361,42 @@ def updatePackageStatus(packageID,username):
 @app.route('/app/track/<int:packageID>/<string:username>', methods=['GET'])
 def trackPackage(packageID,username):
 	print("[DEBUG] track package :")
+
 	try:
+		print("check user is seller or DE")
+		users = mongo.db.users
+		user = users.find_one({"username" :username})
+		user_type =user['user_type']
+	except Exception, e:
+		print (e.message)
+		print("\n[ERROR]] User does not exist. check status Failed...!!!")
+		output = { "error_code": "010", "message": "User does not exists in system"}
+		return jsonify({'Response' : output})
+
+	try :
+		print("check package exists or not")
 		packages = mongo.db.packages
-		package_events=packages.find_one({'packageID':packageID},{'event_list':1})
-		# print package_events
+
+		if user_type =='seller':
+
+			package_events = packages.find_one({"$and":[{'packageID' : packageID},{'sellerID':user['_id']}]},{'event_list':1})
+
+		elif user_type =='de':
+			package_events = packages.find_one({"$and":[{'packageID' : packageID},{'sellerID':user['seller_id']}]},{'event_list':1})
+
 		if package_events == None:
-			# print ("Package details do not exist in system")
-			output = { "error_code": "010", "message": "Package details do not exist in system"}
+			print("\n[ERROR] no package found...!!!")
+			output = {'error_code':'100','message' : 'no package found'}
 			return jsonify({'Response' : output})
+
+	# try:
+	# 	packages = mongo.db.packages
+	# 	package_events=packages.find_one({'packageID':packageID},{'event_list':1})
+	# 	# print package_events
+	# 	if package_events == None:
+	# 		# print ("Package details do not exist in system")
+	# 		output = { "error_code": "010", "message": "Package details do not exist in system"}
+	# 		return jsonify({'Response' : output})
 
 		if "event_list" not in package_events:
 			print ("no events found for the package")
@@ -412,16 +440,35 @@ def trackPackage(packageID,username):
 @app.route('/app/de/<int:packageID>/<string:username>', methods=['GET'])
 def contactDE(packageID,username):
 	print("[DEBUG] contact DE Request :")
-	try:
-		packages = mongo.db.packages
-		package = packages.find_one({'packageID' : packageID})
-	except Exception, e:
-		print (e.message)
-		print("\n[ERROR]] check status Failed...!!!")
-		output = { "error_code": "010", "message": "Package details do not exist in system"}
 
 	try:
+		print("check user is seller or DE")
 		users = mongo.db.users
+		user = users.find_one({"username" :username})
+		user_type =user['user_type']
+	except Exception, e:
+		print (e.message)
+		print("\n[ERROR]] User does not exist. check status Failed...!!!")
+		output = { "error_code": "010", "message": "User does not exists in system"}
+		return jsonify({'Response' : output})
+
+	try :
+		print("check package exists or not")
+		packages = mongo.db.packages
+
+		if user_type =='de':
+			print("\n[ERROR] Access denied...!!!")
+			output = {'error_code':'100','message' : 'Access denied'}
+			return jsonify({'Response' : output})
+		elif user_type =='seller':
+
+			package = packages.find_one({"$and":[{'packageID' : packageID},{'sellerID':user['_id']}]})
+
+		if package == None:
+			print("\n[ERROR] no package found...!!!")
+			output = {'error_code':'100','message' : 'no package found'}
+			return jsonify({'Response' : output})
+
 		DEuser = users.find_one({"_id" :ObjectId(package['deID'])})
 
 		output = { "error_code": "000","name":DEuser['name'],"contact_no":DEuser['contact_no']}
@@ -443,8 +490,34 @@ def contactDE(packageID,username):
 def contactBuyer(packageID,username):
 	print("[DEBUG] contact Buyer Request ")
 	try:
+		print("check user is seller or DE")
+		users = mongo.db.users
+		user = users.find_one({"username" :username})
+		user_type =user['user_type']
+	except Exception, e:
+		print (e.message)
+		print("\n[ERROR]] User does not exist. check status Failed...!!!")
+		output = { "error_code": "010", "message": "User does not exists in system"}
+		return jsonify({'Response' : output})
+
+	try :
+		print("check package exists or not")
 		packages = mongo.db.packages
-		package = packages.find_one({'packageID' : packageID})
+
+		if user_type =='seller':
+
+			# package = packages.find_one({"$and":[{'packageID' : packageID},{'sellerID':user['_id']}]})
+			print("\n[ERROR] Access denied!!!")
+			output = {'error_code':'100','message' : 'Access denied'}
+			return jsonify({'Response' : output})
+
+		elif user_type =='de':
+			package = packages.find_one({"$and":[{'packageID' : packageID},{'sellerID':user['seller_id']}]})
+
+		if package == None:
+			print("\n[ERROR] no package found...!!!")
+			output = {'error_code':'100','message' : 'no package found'}
+			return jsonify({'Response' : output})
 
 		output = { "error_code": "000","name":package["Buyer_details"]["name"],"contact_no":package["Buyer_details"]["contactNo"]}
 
@@ -597,43 +670,43 @@ def addDE(username):
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ 
 # create event
-@app.route('/app/event/<int:packageID>/<string:username>', methods=['POST'])
-def createEvent(packageID,username):
-	print("[DEBUG] create event ")
-	output =""
-	try:
-		request.json["packageID"]=packageID
+# @app.route('/app/event/<int:packageID>/<string:username>', methods=['POST'])
+# def createEvent(packageID,username):
+# 	print("[DEBUG] create event ")
+# 	output =""
+# 	try:
+# 		request.json["packageID"]=packageID
 
-		packages=mongo.db.packages
-		pack_id=packages.find_one({'packageID':packageID},{'_id':1})
+# 		packages=mongo.db.packages
+# 		pack_id=packages.find_one({'packageID':packageID},{'_id':1})
 		
-		if pack_id == None:
-			output = { "error_code": "010", "message": "package details do not exist in system"}
-			raise Exception()
-		users =mongo.db.users
-		user = users.find_one({'username' : username})
-		request.json["userID"]=user['_id']
-		request.json["timeStamp"]=datetime.datetime.utcnow()
-		print (request.json["timeStamp"])
+# 		if pack_id == None:
+# 			output = { "error_code": "010", "message": "package details do not exist in system"}
+# 			raise Exception()
+# 		users =mongo.db.users
+# 		user = users.find_one({'username' : username})
+# 		request.json["userID"]=user['_id']
+# 		request.json["timeStamp"]=datetime.datetime.utcnow()
+# 		print (request.json["timeStamp"])
 
-		events=mongo.db.events
+# 		events=mongo.db.events
 
-		new_event_id=events.insert(request.json)
-		new_event= events.find_one({'_id': new_event_id })
-		packages.update({"packageID" :packageID},{'$push':{'event_list':new_event_id }})
+# 		new_event_id=events.insert(request.json)
+# 		new_event= events.find_one({'_id': new_event_id })
+# 		packages.update({"packageID" :packageID},{'$push':{'event_list':new_event_id }})
 
-		#  TODO : user does not exist case
+# 		#  TODO : user does not exist case
 
-		output = { "error_code": "000","message": "event created successfully","eventID":str(new_event_id),"time_stamp":str(new_event["timeStamp"])}
+# 		output = { "error_code": "000","message": "event created successfully","eventID":str(new_event_id),"time_stamp":str(new_event["timeStamp"])}
 
-	except Exception, e:
+# 	except Exception, e:
 
-		print (e.message)
-		print("\n[ERROR]] check status Failed...!!!")
-		if len(output)==0:
-			output = { "error_code": "010", "message": "create event failed"}
+# 		print (e.message)
+# 		print("\n[ERROR]] check status Failed...!!!")
+# 		if len(output)==0:
+# 			output = { "error_code": "010", "message": "create event failed"}
 
-	return jsonify({'Response' : output})
+# 	return jsonify({'Response' : output})
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ 
 # get notification
