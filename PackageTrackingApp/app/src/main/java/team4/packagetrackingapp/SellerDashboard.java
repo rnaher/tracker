@@ -28,8 +28,16 @@ public class SellerDashboard extends AppCompatActivity {
         Intent intent = new Intent(this, ViewPackagesActivity.class);
         startActivity(intent);
     }
+
+    /** Called when the user taps the View Notifications button */
     public void viewNotifications(View view) {
         Intent intent = new Intent(this, viewNotifications.class);
+        startActivity(intent);
+    }
+
+    /** Called when the user taps the Edit Profile button */
+    public void editProfile(View view) {
+        Intent intent = new Intent(this, EditProfileActivity.class);
         startActivity(intent);
     }
 }

@@ -63,6 +63,9 @@
         <activity
             android:name=".viewNotifications"
             android:parentActivityName=".SellerDashboard" />
+        <activity
+            android:name=".EditProfileActivity"
+            android:parentActivityName=".SellerDashboard" />
     </application>
 
 </manifest>

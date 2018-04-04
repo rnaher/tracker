@@ -55,4 +55,10 @@
     <string name="pkg_det_7">Status:</string>
     <string name="de_dash_3">Share Location</string>
     <string name="track_result_loc">View Location (Webpage)</string>
+    <string name="profile_menu">Edit Profile</string>
+    <string name="profile_1">Username</string>
+    <string name="profile_2">Password</string>
+    <string name="profile_3">Name</string>
+    <string name="profile_4">Email</string>
+    <string name="profile_5">Contact No</string>
 </resources>
