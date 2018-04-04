@@ -370,7 +370,12 @@ def contactDE(packageID,username):
 	try:
 		packages = mongo.db.packages
 		package = packages.find_one({'packageID' : packageID})
+	except Exception, e:
+		print (e.message)
+		print("\n[ERROR]] check status Failed...!!!")
+		output = { "error_code": "010", "message": "Package details do not exist in system"}
 
+	try:
 		users = mongo.db.users
 		DEuser = users.find_one({"_id" :ObjectId(package['deID'])})
 
@@ -383,7 +388,7 @@ def contactDE(packageID,username):
 	except Exception, e:
 		print (e.message)
 		print("\n[ERROR]] check status Failed...!!!")
-		output = { "error_code": "010", "message": "Package details do not exist in system"}
+		output = { "error_code": "010", "message": "DE not found"}
 
 	return jsonify({'Response' : output})
 
@@ -403,7 +408,7 @@ def contactBuyer(packageID,username):
 	except Exception, e:
 		print (e.message)
 		print("\n[ERROR]] check status Failed...!!!")
-		output = { "error_code": "010", "message": "Package details do not exist in system"}
+		output = { "error_code": "010", "message": "Package details/buyer details do not exist in system"}
 
 	return jsonify({'Response' : output})
 
