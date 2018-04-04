@@ -449,8 +449,8 @@ def all_packages(username):
 			if "deID" in package:
 				DE=users.find_one({'_id': ObjectId(package['deID'])})
 				pack['DE']=DE['name']
-			else :
-				pack['DE']="none"
+			# else :
+			# 	pack['DE']="none"
 
 			pprint.pprint(pack)
 			pack_list.append(pack)
@@ -501,8 +501,8 @@ def get_one_packages(packageID, username):
 		if "deID" in package:
 			DE=users.find_one({'_id': ObjectId(package['deID'])})
 			pack['DE']=DE['name']
-		else :
-			pack['DE']="none"
+		# else :
+		# 	pack['DE']="none"
 		
 		pprint.pprint(pack)
 
