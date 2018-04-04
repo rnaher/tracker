@@ -619,7 +619,7 @@ def getNotification(username):
 	return jsonify({'Response' : output})
 
 # get profile
-@app.route('/app/profile/<string:username>',methods=['PUT'])
+@app.route('/app/profile/<string:username>',methods=['GET'])
 def getProfile(username):
 	print("[DEBUG] get profile request ")
 	try:
@@ -645,7 +645,7 @@ def getProfile(username):
 	return jsonify({'Response' : output})
 
 # edit profile
-@app.route('/app/profile/<string:username>',methods=['GET'])
+@app.route('/app/profile/<string:username>',methods=['PUT'])
 def editProfile(username):
 	print("[DEBUG] edit profile request ")
 	try:

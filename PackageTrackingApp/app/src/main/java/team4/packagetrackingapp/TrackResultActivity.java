@@ -210,4 +210,78 @@ public class TrackResultActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void contactDE(View view) {
+        // all numbers are prefixed with 91 for India
+
+        SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.MyPREFERENCES,
+                Context.MODE_PRIVATE);
+        String username = sharedPreferences.getString("username", null);
+
+        SharedPreferences sP= getSharedPreferences(MainActivity.HOST_Config, Context.MODE_PRIVATE);
+
+        String hostIP= sP.getString("HOST_IP",null);
+        String hostPort= sP.getString("HOST_PORT",null);
+        String packageID= getIntent().getExtras().getString("packageID");
+        String URL = "http://"+hostIP+":"+hostPort+"/app/de/"+packageID+"/"+username;
+        System.out.println(URL);
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        JsonObjectRequest objectRequest = new JsonObjectRequest(
+                Request.Method.GET,
+                URL,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String contact = null;
+                        String number = "tel:+91-";
+                        JSONObject response_jsonObj = null;
+                        String code = null, msg = null;
+                        Log.e("Rest Response", response.toString());
+
+                        try {
+                            response_jsonObj = response.getJSONObject("Response");
+                            code = response_jsonObj.getString("error_code");
+                        } catch(org.json.JSONException e) {
+                            Log.e("json exception", "thrown");
+                        }
+
+                        if(Objects.equals(code, "000")) {
+                            try {
+                                contact = response_jsonObj.getString("contact_no");
+                            } catch(org.json.JSONException e) {
+                                Log.e("json exception", "thrown");
+                            }
+
+                            number = number+contact;
+                            Log.e("number", number);
+
+                            Intent phoneIntent = new Intent(Intent.ACTION_DIAL);
+                            phoneIntent.setData(Uri.parse(number));
+
+                            startActivity(phoneIntent);
+                        } else {
+                            try {
+                                msg = response_jsonObj.getString("message");
+                            } catch(org.json.JSONException e) {
+                                Log.e("json exception", "thrown");
+                            } catch(java.lang.NullPointerException e) {
+                                Log.e("NullPointerException", "thrown");
+                            }
+
+                            Toast.makeText(getApplicationContext(), msg,
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Rest Error", error.toString());
+                    }
+                });
+
+        requestQueue.add(objectRequest);
+    }
 }
