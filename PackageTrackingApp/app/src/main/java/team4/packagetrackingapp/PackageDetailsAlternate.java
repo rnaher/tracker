@@ -1,6 +1,7 @@
 package team4.packagetrackingapp;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -49,5 +50,30 @@ public class PackageDetailsAlternate extends AppCompatActivity {
         } catch(java.lang.NullPointerException e) {
             Log.e("NullPointerException", "thrown");
         }
+    }
+
+    /** Called when the User taps Contact Buyer */
+    public void contactBuyer(View view) {
+        // all numbers are prefixed with 91 for India
+        String number = "tel:+91-";
+        String contact;
+
+        String pkgDetails_string = getIntent().getStringExtra("pkgDetails");
+
+        JSONObject pkgDetails, buyerDetails;
+        try {
+            pkgDetails = new JSONObject(pkgDetails_string);
+            buyerDetails = pkgDetails.getJSONObject("Buyer_details");
+            contact = buyerDetails.getString("contactNo");
+            number = number+contact;
+            Log.e("number", number);
+        } catch(org.json.JSONException e) {
+            Log.e("JSONException", "thrown");
+        }
+
+        Intent phoneIntent = new Intent(Intent.ACTION_DIAL);
+        phoneIntent.setData(Uri.parse(number));
+
+        startActivity(phoneIntent);
     }
 }
