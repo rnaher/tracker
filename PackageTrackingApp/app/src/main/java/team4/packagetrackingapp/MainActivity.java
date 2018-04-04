@@ -64,13 +64,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /** Called when the user taps the Send button */
+    /*
     public void sendMessage(View view) {
         Intent intent = new Intent(this, DisplayMessageActivity.class);
-        EditText editText = findViewById(R.id.editText2);
+        EditText editText = findViewById(R.id.);
         String message = editText.getText().toString();
         intent.putExtra(EXTRA_MESSAGE, message);
         startActivity(intent);
-    }
+    }*/
 
     /** Called when the user taps the Register button */
     public void register(View view) {

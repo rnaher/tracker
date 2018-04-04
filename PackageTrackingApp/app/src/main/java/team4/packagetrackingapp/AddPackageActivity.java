@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -62,104 +63,117 @@ public class AddPackageActivity extends AppCompatActivity implements AdapterView
     /** Called when user taps submit button */
     public void submitPackage(View view) {
         // need to ensure constraints on email ID, pw etc.
-        Log.e("checking "," function started");
+        Log.e("checking ", " function started");
 
         EditText package_name = findViewById(R.id.packageField);
         EditText destination = findViewById(R.id.destinationField);
         EditText buyer = findViewById(R.id.buyerField);
         EditText contact = findViewById(R.id.contactField);
-        Log.e("checking "," function started");
+        if (TextUtils.isEmpty(package_name.getText())) {
 
-//        Package newPackage = new Package(Integer.parseInt(package_name.getText().toString()), destination.getText().toString());
-        Log.e("checking "," function started");
+            Toast.makeText(getApplicationContext(), "Package Name is empty", Toast.LENGTH_SHORT).show();
 
-        //        newUser.show();
+        } else if (TextUtils.isEmpty(destination.getText())) {
 
-        Gson gson = new Gson();
-//        String newPackage_jsonString = gson.toJson(newPackage);
+            Toast.makeText(getApplicationContext(), "Destination is empty", Toast.LENGTH_SHORT).show();
 
-        JSONObject newPackage_json = new JSONObject();
-        JSONObject buyer_json = new JSONObject();
-        /*
-        try {
-            newPackage_json = new JSONObject(newPackage_jsonString);
-        }catch(org.json.JSONException e) {
-            Log.e("JSON object creation", "failed");
-        }
-        */
-        try {
-            newPackage_json.put("packageID", Double.parseDouble(package_name.getText().toString()));
-            buyer_json.put("name", buyer.getText().toString());
-            buyer_json.put("contactNo", contact.getText().toString());
-            newPackage_json.put("Buyer_details", buyer_json);
-            newPackage_json.put("destination", destination.getText().toString());
-            Log.e("request",newPackage_json.toString());
-        }catch(org.json.JSONException e) {
-            Log.e("JSON Object creation", "failed");
-        }
+        } else if (TextUtils.isEmpty(buyer.getText())) {
+
+            Toast.makeText(getApplicationContext(), "Buyer is empty", Toast.LENGTH_SHORT).show();
+
+        } else if (TextUtils.isEmpty(contact.getText())) {
+
+            Toast.makeText(getApplicationContext(), "Contact is empty", Toast.LENGTH_SHORT).show();
+
+        } else {
+            Log.e("checking ", " function started");
+
+            //        Package newPackage = new Package(Integer.parseInt(package_name.getText().toString()), destination.getText().toString());
+            Log.e("checking ", " function started");
+
+            //        newUser.show();
+
+            Gson gson = new Gson();
+            //        String newPackage_jsonString = gson.toJson(newPackage);
+
+            JSONObject newPackage_json = new JSONObject();
+            JSONObject buyer_json = new JSONObject();
+            /*
+            try {
+                newPackage_json = new JSONObject(newPackage_jsonString);
+            }catch(org.json.JSONException e) {
+                Log.e("JSON object creation", "failed");
+            }
+            */
+            try {
+                newPackage_json.put("packageID", Double.parseDouble(package_name.getText().toString()));
+                buyer_json.put("name", buyer.getText().toString());
+                buyer_json.put("contactNo", contact.getText().toString());
+                newPackage_json.put("Buyer_details", buyer_json);
+                newPackage_json.put("destination", destination.getText().toString());
+                Log.e("request", newPackage_json.toString());
+            } catch (org.json.JSONException e) {
+                Log.e("JSON Object creation", "failed");
+            }
 
 
+            SharedPreferences sharedPreferences = getSharedPreferences(MainActivity.HOST_Config, Context.MODE_PRIVATE);
 
+            String hostIP = sharedPreferences.getString("HOST_IP", null);
+            String hostPort = sharedPreferences.getString("HOST_PORT", null);
 
+            sharedPreferences = getSharedPreferences(LoginActivity.MyPREFERENCES, Context.MODE_PRIVATE);
 
+            String username = sharedPreferences.getString("username", null);
+            // Log.e("username (sharedprefs)", username);
 
-        SharedPreferences sharedPreferences= getSharedPreferences(MainActivity.HOST_Config, Context.MODE_PRIVATE);
+            String URL = "http://" + hostIP + ":" + hostPort + "/app/package/" + username;
+            System.out.println(URL);
+            //        String URL= "http://10.3.0.147:8080/app/registration";
 
-        String hostIP= sharedPreferences.getString("HOST_IP",null);
-        String hostPort= sharedPreferences.getString("HOST_PORT",null);
+            RequestQueue requestQueue = Volley.newRequestQueue(this);
 
-        sharedPreferences= getSharedPreferences(LoginActivity.MyPREFERENCES, Context.MODE_PRIVATE);
+            JsonObjectRequest objectRequest = new JsonObjectRequest(
+                    Request.Method.POST,
+                    URL,
+                    newPackage_json,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            JSONObject response_jsonObj;
+                            String code = null, msg = null;
+                            Log.e("Rest Response", response.toString());
 
-        String username = sharedPreferences.getString("username", null);
-       // Log.e("username (sharedprefs)", username);
+                            try {
+                                response_jsonObj = response.getJSONObject("Response");
+                                code = response_jsonObj.getString("error_code");
+                                msg = response_jsonObj.getString("message");
+                            } catch (org.json.JSONException e) {
+                                Log.e("json exception", "thrown");
+                            }
 
-        String URL = "http://"+hostIP+":"+hostPort+"/app/package/"+username;
-        System.out.println(URL) ;
-//        String URL= "http://10.3.0.147:8080/app/registration";
+                            if (Objects.equals(code, "000")) {
+                                Toast.makeText(getApplicationContext(), msg,
+                                        Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "failed",
+                                        Toast.LENGTH_LONG).show();
+                            }
 
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-
-        JsonObjectRequest objectRequest = new JsonObjectRequest(
-                Request.Method.POST,
-                URL,
-                newPackage_json,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        JSONObject response_jsonObj;
-                        String code = null, msg = null;
-                        Log.e("Rest Response", response.toString());
-
-                        try {
-                            response_jsonObj = response.getJSONObject("Response");
-                            code = response_jsonObj.getString("error_code");
-                            msg = response_jsonObj.getString("message");
-                        } catch(org.json.JSONException e) {
-                            Log.e("json exception", "thrown");
+                            Intent intent = new Intent(AddPackageActivity.this, SellerDashboard.class);
+                            startActivity(intent);
                         }
-
-                        if(Objects.equals(code, "000")) {
-                            Toast.makeText(getApplicationContext(), msg,
-                                    Toast.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(getApplicationContext(), "failed",
-                                    Toast.LENGTH_LONG).show();
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.e("Rest Error", error.toString());
                         }
+                    });
 
-                        Intent intent = new Intent(AddPackageActivity.this, SellerDashboard.class);
-                        startActivity(intent);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e("Rest Error", error.toString());
-                    }
-                });
-
-        requestQueue.add(objectRequest);
+            requestQueue.add(objectRequest);
+        }
     }
-
 
     /** Called when the user taps the scan barcode button */
 

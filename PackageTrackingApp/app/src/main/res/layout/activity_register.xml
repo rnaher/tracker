@@ -15,7 +15,7 @@
         android:layout_marginTop="5dp"
         android:ems="10"
         android:hint="@string/reg_contact_hint"
-        android:inputType="textPersonName"
+        android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -63,7 +63,7 @@
         android:layout_marginTop="5dp"
         android:ems="10"
         android:hint="@string/reg_email_hint"
-        android:inputType="textPersonName"
+        android:inputType="textEmailAddress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/contactField" />

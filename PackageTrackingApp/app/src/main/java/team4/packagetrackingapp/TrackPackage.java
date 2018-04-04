@@ -3,6 +3,7 @@ package team4.packagetrackingapp;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -65,9 +66,16 @@ public class TrackPackage extends AppCompatActivity implements AdapterView.OnIte
     }
     /** Called when the user taps the Track button */
     public void Track(View view) {
-        Intent intent = new Intent(this, TrackResultActivity.class);
-        intent.putExtra("packageID",contentTxt.getText().toString());
-        startActivity(intent);
+        if( TextUtils.isEmpty(contentTxt.getText())){
+
+            Toast.makeText(getApplicationContext(), "Package Id is empty", Toast.LENGTH_SHORT).show();
+
+        }
+        else {
+            Intent intent = new Intent(this, TrackResultActivity.class);
+            intent.putExtra("packageID", contentTxt.getText().toString());
+            startActivity(intent);
+        }
     }
 
 }
