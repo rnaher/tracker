@@ -179,20 +179,28 @@ def checkPackageStatus(packageID,username):
 		return jsonify({'Response' : output})
 
 	try :
-
 		packages = mongo.db.packages
-		package = packages.find_one({'packageID' : packageID})
+		if user_type =='seller':
 
+			package = packages.find_one({"$and":[{'packageID' : packageID},{'sellerID':user['_id']}]})
+
+		else:
+			package = packages.find_one({"$and":[{'packageID' : packageID},{'sellerID':user['seller_id']}]})
+
+		if package == None:
+			print("\n[ERROR] no package found...!!!")
+			output = {'error_code':'100','message' : 'no package found'}
+			return jsonify({'Response' : output})
 		
-		if user_type =='seller' and user['_id']!=package['sellerID']:
-			print("\n[ERROR] Access denied...!!!")
-			output = {'error_code':'100','message' : 'Access denied'}
-			return jsonify({'Response' : output})
+		# if user_type =='seller' and user['_id']!=package['sellerID']:
+		# 	print("\n[ERROR] Access denied...!!!")
+		# 	output = {'error_code':'100','message' : 'Access denied'}
+		# 	return jsonify({'Response' : output})
 
-		elif user_type=='de' and user['seller_id'] !=package['sellerID']:
-			print("\n[ERROR] Access denied...!!!")
-			output = {'error_code':'100','message' : 'Access denied'}
-			return jsonify({'Response' : output})
+		# elif user_type=='de' and user['seller_id'] !=package['sellerID']:
+		# 	print("\n[ERROR] Access denied...!!!")
+		# 	output = {'error_code':'100','message' : 'Access denied'}
+		# 	return jsonify({'Response' : output})
 
 		
 
@@ -231,22 +239,35 @@ def updatePackageStatus(packageID,username):
 	try :
 		print("check package exists or not")
 		packages = mongo.db.packages
-		package=packages.find_one({'packageID':packageID})
+
+		if user_type =='seller':
+
+			package = packages.find_one({"$and":[{'packageID' : packageID},{'sellerID':user['_id']}]})
+
+		elif user_type =='de':
+			package = packages.find_one({"$and":[{'packageID' : packageID},{'sellerID':user['seller_id']}]})
 
 		if package == None:
-			print("\n[ERROR]] package details do not exist. check status Failed...!!!")
-			output = { "error_code": "010", "message": "package details do not exist in system"}
+			print("\n[ERROR] no package found...!!!")
+			output = {'error_code':'100','message' : 'no package found'}
 			return jsonify({'Response' : output})
 
-		if user_type =='seller' and user['_id']!=package['sellerID']:
-			print("\n[ERROR] Access denied...!!!")
-			output = {'error_code':'100','message' : 'Access denied'}
-			return jsonify({'Response' : output})
+		# package=packages.find_one({'packageID':packageID})
 
-		elif user_type=='de' and user['seller_id'] !=package['sellerID']:
-			print("\n[ERROR] Access denied...!!!")
-			output = {'error_code':'100','message' : 'Access denied'}
-			return jsonify({'Response' : output})
+		# if package == None:
+		# 	print("\n[ERROR]] package details do not exist. check status Failed...!!!")
+		# 	output = { "error_code": "010", "message": "package details do not exist in system"}
+		# 	return jsonify({'Response' : output})
+
+		# if user_type =='seller' and user['_id']!=package['sellerID']:
+		# 	print("\n[ERROR] Access denied...!!!")
+		# 	output = {'error_code':'100','message' : 'Access denied'}
+		# 	return jsonify({'Response' : output})
+
+		# elif user_type=='de' and user['seller_id'] !=package['sellerID']:
+		# 	print("\n[ERROR] Access denied...!!!")
+		# 	output = {'error_code':'100','message' : 'Access denied'}
+		# 	return jsonify({'Response' : output})
 
 
 	# create event
@@ -265,19 +286,44 @@ def updatePackageStatus(packageID,username):
 		packages.update({"packageID" :packageID},{'$push':{'event_list':new_event_id }})
 		newStatus = request.json['status']
 
-		packages.update_one(
-			{'packageID' : packageID},
-			{
-				"$set": {
-					"status":newStatus,
-					"deID":form["userID"]
+		if user_type =='seller':
+			packages.update_one(
+				{"$and":[{'packageID' : packageID},{'sellerID':user['_id']}]},
+				{
+					"$set": {
+						"status":newStatus,
+						"deID":form["userID"]
+					}
 				}
-			}
-		)
+			)
 
-		package = packages.find_one({'packageID' : packageID})
+			# package = packages.find_one({"$and":[{'packageID' : packageID},{'sellerID':user['_id']}]})
 
-		print("\n[INFO] status updated ... \n [INFO] package: ",packageID, "\t status ",package['status'])
+		elif user_type =='de':
+			packages.update_one(
+				{"$and":[{'packageID' : packageID},{'sellerID':user['seller_id']}]},
+				{
+					"$set": {
+						"status":newStatus,
+						"deID":form["userID"]
+					}
+				}
+			)			
+			# package = packages.find_one({"$and":[{'packageID' : packageID},{'sellerID':user['seller_id']}]})
+
+		# packages.update_one(
+		# 	{'packageID' : packageID},
+		# 	{
+		# 		"$set": {
+		# 			"status":newStatus,
+		# 			"deID":form["userID"]
+		# 		}
+		# 	}
+		# )
+
+		# package = packages.find_one({'packageID' : packageID})
+
+		print("\n[INFO] status updated ... \n [INFO] package: ",packageID, "\t status: ",newStatus)
 
 		output = { "error_code": "000", "message": "status updated successfully"}
 
@@ -289,7 +335,7 @@ def updatePackageStatus(packageID,username):
 		output = { "error_code": "010", "message": "Package details do not exist in system"}
 
 	# add notification
-	if package['status']=="Failed":
+	if newStatus=="Failed":
 		try:
 			print("[DEBUG] create notifications :")
 			# if request.json['status']=="Failed":
@@ -298,7 +344,7 @@ def updatePackageStatus(packageID,username):
 			data['packageID']=packageID
 			data['seen']=False
 			users= mongo.db.users
-			data["seller_id"]=package['sellerID']
+			data["seller_id"]=newStatus
 
 			notifications=mongo.db.notifications
 			notifications.insert(data)
@@ -310,7 +356,7 @@ def updatePackageStatus(packageID,username):
 			print("[ERROR] create notification Failed...!!!")
 
 	return jsonify({'Response' : output})
-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ 
 # track package
 @app.route('/app/track/<int:packageID>/<string:username>', methods=['GET'])
 def trackPackage(packageID,username):
@@ -361,8 +407,7 @@ def trackPackage(packageID,username):
 	return jsonify({'Response' : output})
 
 
-
-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ 
 # contact DE
 @app.route('/app/de/<int:packageID>/<string:username>', methods=['GET'])
 def contactDE(packageID,username):
@@ -392,7 +437,7 @@ def contactDE(packageID,username):
 
 	return jsonify({'Response' : output})
 
-
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ 
 # contact Buyer
 @app.route('/app/buyer/<int:packageID>/<string:username>', methods=['GET'])
 def contactBuyer(packageID,username):
@@ -519,6 +564,7 @@ def get_one_packages(packageID, username):
 	return jsonify({'Response' : output})
 
 
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ 
 # add DE 
 @app.route('/app/de/<string:username>', methods=['POST'])
 def addDE(username):
@@ -546,8 +592,10 @@ def addDE(username):
 
 	return jsonify({'Response' : output})
 
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ 
 # delete DE:
 
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ 
 # create event
 @app.route('/app/event/<int:packageID>/<string:username>', methods=['POST'])
 def createEvent(packageID,username):
@@ -587,6 +635,7 @@ def createEvent(packageID,username):
 
 	return jsonify({'Response' : output})
 
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ 
 # get notification
 @app.route('/app/notification/<string:username>',methods=['GET'])
 def getNotification(username):
@@ -618,6 +667,7 @@ def getNotification(username):
 
 	return jsonify({'Response' : output})
 
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ 
 # get profile
 @app.route('/app/profile/<string:username>',methods=['GET'])
 def getProfile(username):
@@ -644,6 +694,7 @@ def getProfile(username):
 
 	return jsonify({'Response' : output})
 
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ 
 # edit profile
 @app.route('/app/profile/<string:username>',methods=['PUT'])
 def editProfile(username):
