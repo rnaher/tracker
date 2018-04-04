@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="status_7">
+        <item>&lt;No selection&gt;</item>
+        <item>In Warehouse</item>
+    </string-array>
+</resources>

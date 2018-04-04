@@ -84,7 +84,7 @@ public class RegisterActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "User Name is empty", Toast.LENGTH_SHORT).show();
 
         }
-        else if(pass2.length() <= 8){
+        else if(pass2.length() < 8){
             Toast.makeText(getApplicationContext(),"Invalid Password",Toast.LENGTH_SHORT).show();
         }
         else if (!email2.matches(emailPattern)) {

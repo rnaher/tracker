@@ -40,7 +40,7 @@ public class ScanUpdateActivity extends AppCompatActivity implements AdapterView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_update);
 
-        Spinner status_options = findViewById(R.id.statusSpinner);
+/*        Spinner status_options = findViewById(R.id.statusSpinner);
 //        scanBtn = (Button)findViewById(R.id.barcodeButton);
 
         status_options.setOnItemSelectedListener(this);
@@ -49,7 +49,7 @@ public class ScanUpdateActivity extends AppCompatActivity implements AdapterView
                 R.array.status_options, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         status_options.setAdapter(adapter);
-        contentTxt = (TextView)findViewById(R.id.pkgIDField);
+        contentTxt = (TextView)findViewById(R.id.pkgIDField);*/
 
 
 //        scanBtn.setOnClickListener(this);
@@ -189,7 +189,12 @@ public class ScanUpdateActivity extends AppCompatActivity implements AdapterView
                     }
                 });
 
-        requestQueue.add(objectRequest);
+        if (Objects.equals(status, "<No selection>")) {
+            Toast.makeText(getApplicationContext(), "Invalid status selected",
+                    Toast.LENGTH_LONG).show();
+        } else {
+            requestQueue.add(objectRequest);
+        }
     }
 
     public void old_package_status(String pkgID) {
@@ -244,6 +249,70 @@ public class ScanUpdateActivity extends AppCompatActivity implements AdapterView
 
                             TextView oldPackageStatus = findViewById(R.id.pkgOldStatusView);
                             oldPackageStatus.setText(pkgStatus);
+
+                            Spinner status_options = findViewById(R.id.statusSpinner);
+                            status_options.setOnItemSelectedListener(ScanUpdateActivity.this);
+
+                            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                                    ScanUpdateActivity.this,
+                                    R.array.status_options,
+                                    android.R.layout.simple_spinner_item);
+
+                            if (Objects.equals(pkgStatus, "In Warehouse")) {
+                                adapter = ArrayAdapter.createFromResource(
+                                        ScanUpdateActivity.this,
+                                        R.array.status_1,
+                                        android.R.layout.simple_spinner_item);
+                                Log.e("status", "1");
+                            } else if (Objects.equals(pkgStatus, "Assigned")) {
+                                adapter = ArrayAdapter.createFromResource(
+                                        ScanUpdateActivity.this,
+                                        R.array.status_2,
+                                        android.R.layout.simple_spinner_item);
+                                Log.e("status", "2");
+                            } else if (Objects.equals(pkgStatus, "Shipped")) {
+                                adapter = ArrayAdapter.createFromResource(
+                                        ScanUpdateActivity.this,
+                                        R.array.status_3,
+                                        android.R.layout.simple_spinner_item);
+                                Log.e("status", "3");
+                            } else if (Objects.equals(pkgStatus, "In transit")) {
+                                adapter = ArrayAdapter.createFromResource(
+                                        ScanUpdateActivity.this,
+                                        R.array.status_4,
+                                        android.R.layout.simple_spinner_item);
+                                Log.e("status", "4");
+                            } else if (Objects.equals(pkgStatus, "Out for Delivery")) {
+                                adapter = ArrayAdapter.createFromResource(
+                                        ScanUpdateActivity.this,
+                                        R.array.status_5,
+                                        android.R.layout.simple_spinner_item);
+                                Log.e("status", "5");
+                            } else if (Objects.equals(pkgStatus, "Missed Delivery")) {
+                                adapter = ArrayAdapter.createFromResource(
+                                        ScanUpdateActivity.this,
+                                        R.array.status_6,
+                                        android.R.layout.simple_spinner_item);
+                                Log.e("status", "6");
+                            } else if (Objects.equals(pkgStatus, "Failed")) {
+                                adapter = ArrayAdapter.createFromResource(
+                                        ScanUpdateActivity.this,
+                                        R.array.status_7,
+                                        android.R.layout.simple_spinner_item);
+                                Log.e("status", "7");
+                            } else if (Objects.equals(pkgStatus, "Delivered")) {
+                                adapter = ArrayAdapter.createFromResource(
+                                        ScanUpdateActivity.this,
+                                        R.array.status_8,
+                                        android.R.layout.simple_spinner_item);
+                                Log.e("status", "8");
+                            } else {
+                                Log.e("status", "invalid");
+                            }
+
+                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            status_options.setAdapter(adapter);
+                            Log.e("spinner", "set");
                         } else {
                             try {
                                 msg = response_jsonObj.getString("message");

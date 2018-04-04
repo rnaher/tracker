@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="status_options">
+    <string-array name="status_5">
         <item>&lt;No selection&gt;</item>
-        <item>In Warehouse</item>
-        <item>Assigned</item>
-        <item>Shipped</item>
-        <item>In Transit</item>
-        <item>Out for Delivery</item>
         <item>Missed Delivery</item>
         <item>Failed</item>
         <item>Delivered</item>
