@@ -50,7 +50,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:ems="10"
-        android:text="TextView"
+        android:text="No events yet"
         app:layout_constraintBottom_toTopOf="@+id/button17"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

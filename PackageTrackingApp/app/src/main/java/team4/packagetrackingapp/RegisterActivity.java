@@ -109,7 +109,7 @@ public class RegisterActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "User type is empty", Toast.LENGTH_SHORT).show();
         }
         else if(usertype.equals("de")&&TextUtils.isEmpty(seller_id.getText())){
-            Toast.makeText(getApplicationContext(), "User type is empty", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Delivery Executives must provide Seller ID", Toast.LENGTH_SHORT).show();
         }
         else {
 
