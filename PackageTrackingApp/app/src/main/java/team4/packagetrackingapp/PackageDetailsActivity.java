@@ -39,9 +39,9 @@ public class PackageDetailsActivity extends AppCompatActivity {
             status.setText(pkgDetails.getString("status"));
             seller.setText(pkgDetails.getString("seller"));
             dest.setText(pkgDetails.getString("destination"));
-            de.setText(pkgDetails.getString("DE"));
             name.setText(buyerDetails.getString("name"));
             contact.setText(buyerDetails.getString("contactNo"));
+            de.setText(pkgDetails.getString("DE"));
         } catch(org.json.JSONException e) {
             Log.e("JSONException", "thrown");
         } catch(java.lang.NullPointerException e) {

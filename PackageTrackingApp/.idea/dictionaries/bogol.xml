@@ -2,6 +2,7 @@
   <dictionary name="bogol">
     <words>
       <w>deets</w>
+      <w>hostconfigs</w>
       <w>jsonarray</w>
       <w>pkgs</w>
       <w>sharedprefs</w>
