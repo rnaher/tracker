@@ -467,7 +467,7 @@ def get_one_packages(packageID, username):
 			package=packages.find_one({"$and":[{'packageID':packageID},{'sellerID':user['_id']}]})
 
 		elif user['user_type']== 'de':
-			package=packages.find_one(["$and":{'packageID':packageID},{'deID':user['_id']}])
+			package=packages.find_one({"$and":[{'packageID':packageID},{'deID':user['_id']}]})
 
 		if package==None:
 			output = {  "error_code": "010","packages":"No packages found"} 
@@ -583,7 +583,7 @@ def getNotification(username):
 		notifications=mongo.db.notifications
 
 		notifn_list = []
-		for notification in notifications.find({"$and":[{'seller_id':user_id},'notification_data':'failed',{"seen":{'$ne': True}}]},{'_id':0,'seller_id':0}):
+		for notification in notifications.find({"$and":[{'seller_id':user_id},{'notification_data':'failed'},{"seen":{'$ne': True}}]},{'_id':0,'seller_id':0}):
 			notifn_list.append(notification)
 
 		
