@@ -114,6 +114,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
                                 editor.putString("username", name);
+                                editor.putString("usertype", user_type);
                                 editor.apply();
 
                                 if (Objects.equals(user_type, "de")) {

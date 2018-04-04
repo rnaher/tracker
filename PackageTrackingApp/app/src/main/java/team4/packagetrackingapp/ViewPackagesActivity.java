@@ -88,6 +88,10 @@ public class ViewPackagesActivity extends AppCompatActivity {
 
                             String pkgID = null;
                             final List<JSONObject> pkgs = new ArrayList<JSONObject>();
+
+                            SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.MyPREFERENCES,
+                                    Context.MODE_PRIVATE);
+                            final String user_type = sharedPreferences.getString("usertype", null);
                             try {
                                 for (int i = 0; i < packages.length(); i++) {
                                     Log.e("loop", Integer.toString(i));
@@ -125,10 +129,16 @@ public class ViewPackagesActivity extends AppCompatActivity {
                                     Button btn = findViewById(btn_id);
                                     btn.setOnClickListener(new View.OnClickListener() {
                                         public void onClick(View view) {
-                                            Intent showDeets = new Intent(
-                                                    ViewPackagesActivity.this,
-                                                    PackageDetailsActivity.class);
-
+                                            Intent showDeets = null;
+                                            if (Objects.equals(user_type, "seller")) {
+                                                showDeets = new Intent(
+                                                        ViewPackagesActivity.this,
+                                                        PackageDetailsActivity.class);
+                                            } else if (Objects.equals(user_type, "de")) {
+                                                showDeets = new Intent(
+                                                        ViewPackagesActivity.this,
+                                                        PackageDetailsAlternate.class);
+                                            }
                                             showDeets.putExtra("pkgDetails", pkgs.get(btn_id).toString());
                                             Log.e("sending pkg", pkgs.get(btn_id).toString());
 

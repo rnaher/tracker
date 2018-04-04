@@ -66,6 +66,9 @@
         <activity
             android:name=".EditProfileActivity"
             android:parentActivityName=".SellerDashboard" />
+        <activity
+            android:name=".PackageDetailsAlternate"
+            android:parentActivityName=".ViewPackagesActivity" />
     </application>
 
 </manifest>

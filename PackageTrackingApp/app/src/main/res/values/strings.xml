@@ -61,4 +61,6 @@
     <string name="profile_3">Name</string>
     <string name="profile_4">Email</string>
     <string name="profile_5">Contact No</string>
+    <string name="contact_de">Contact Delivery Executive</string>
+    <string name="contact_buyer">Contact Buyer</string>
 </resources>
