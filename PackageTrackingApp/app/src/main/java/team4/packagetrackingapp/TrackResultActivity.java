@@ -196,7 +196,7 @@ public class TrackResultActivity extends AppCompatActivity {
 
                                     TableRow newRow = new TableRow(TrackResultActivity.this);
                                     TextView tv = new TextView(TrackResultActivity.this);
-                                    tv.setText(detail.getString("Updated_By")+ " ");
+                                    tv.setText(detail.getString("Updated_By")+" ");
                                     tv.setLayoutParams(p);
                                   //  tv.setWidth(50);
                                     Log.e("detail3", detail.toString());
