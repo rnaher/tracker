@@ -84,15 +84,66 @@ public class viewNotifications extends AppCompatActivity {
                                 Log.e("NullPointerException", "thrown while getting notifications");
                             }
 
+                            TableLayout notTable = findViewById(R.id.notifTable);
+                            android.widget.TableRow.LayoutParams p = new android.widget.TableRow.LayoutParams();
+                            p.leftMargin = 20;
+
+                            TableRow initial = new TableRow(viewNotifications.this);
+                            TextView intv = new TextView(viewNotifications.this);
+                            intv.setLayoutParams(p);
+                            //intv.setWidth(50);
+                            intv.setText("Notification Data ");
+                            initial.addView(intv);
+
+                            TextView intv2 = new TextView(viewNotifications.this);
+
+                            intv2.setText("Package ");
+                            intv2.setLayoutParams(p);
+                            //intv2.setWidth(50);
+                            initial.addView(intv2);
+
+                            TextView intv3 = new TextView(viewNotifications.this);
+                            intv3.setText("Seen ");
+                            intv3.setLayoutParams(p);
+                            initial.addView(intv3);
+
+                            //intv3.setWidth(50);
+                            notTable.addView(initial);
+
                             String data_to_show="";
                             try {
                                 for (int i = 0; i < notifications.length(); i++) {
                                     JSONObject detail = notifications.getJSONObject(i);
                                     Log.e("detail", detail.toString());
+
+                                    TableRow newRow = new TableRow(viewNotifications.this);
+                                    TextView tv = new TextView(viewNotifications.this);
+                                    tv.setText(detail.getString("notification_data")+" ");
+                                    tv.setLayoutParams(p);
+                                    //  tv.setWidth(50);
+                                    Log.e("detail3", detail.toString());
+                                    newRow.addView(tv);
+
+                                    TextView tv2 = new TextView(viewNotifications.this);
+                                    tv2.setText(detail.getString("packageID")+" ");
+                                    tv2.setLayoutParams(p);
+                                    //tv2.setWidth(50);
+                                    Log.e("detail4", detail.toString());
+                                    newRow.addView(tv2);
+
+                                    TextView tv3 = new TextView(viewNotifications.this);
+                                    tv3.setText(detail.getString("seen"));
+                                    tv3.setLayoutParams(p);
+                                    //tv3.setWidth(50);
+                                    Log.e("detail5", detail.toString());
+                                    newRow.addView(tv3);
+                                    notTable.addView(newRow);
+
+
                                     data_to_show +=detail.toString()+"\n";
                                 }
-                                TextView notificationView = findViewById(R.id.notification_data);
-                                notificationView.setText(data_to_show);
+                                //TextView notificationView = findViewById(R.id.notification_data);
+                                //notificationView.setText(data_to_show);
                             }catch (org.json.JSONException e) {
                                 Log.e("json exception", "thrown while looping array");
                             } catch(java.lang.NullPointerException e) {
