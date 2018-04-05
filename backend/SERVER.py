@@ -20,6 +20,7 @@ app.config['MONGO_URI'] = 'mongodb://localhost:27017/track_package'
 mongo = PyMongo(app)
 bcrypt = Bcrypt(app)
 
+
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ 
 # Registration Request
 @app.route('/app/registration', methods=['POST'])
@@ -28,6 +29,9 @@ def addUser():
 	form={}
 	try:
 		users = mongo.db.users
+
+                #user = users.find_one({"username" : "sidgarry"})
+                #print user
 		
 		# TODO: unique username
 		form['username']=request.json['username']

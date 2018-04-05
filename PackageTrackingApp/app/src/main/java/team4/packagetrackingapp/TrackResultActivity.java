@@ -157,14 +157,79 @@ public class TrackResultActivity extends AppCompatActivity {
 
                             String data_to_show="";
                             try {
+
+                                TableLayout stTable = findViewById(R.id.statusTable);
+                                android.widget.TableRow.LayoutParams p = new android.widget.TableRow.LayoutParams();
+                                p.leftMargin = 20;
+
+                                TableRow initial = new TableRow(TrackResultActivity.this);
+                                TextView intv = new TextView(TrackResultActivity.this);
+                                intv.setLayoutParams(p);
+                                //intv.setWidth(50);
+                                intv.setText("Delivery Exec ");
+                                initial.addView(intv);
+
+                                TextView intv2 = new TextView(TrackResultActivity.this);
+
+                                intv2.setText("Status ");
+                                intv2.setLayoutParams(p);
+                                //intv2.setWidth(50);
+                                initial.addView(intv2);
+
+                                TextView intv3 = new TextView(TrackResultActivity.this);
+                                intv3.setText("Time Details ");
+                                intv3.setLayoutParams(p);
+                                initial.addView(intv3);
+
+                                //intv3.setWidth(50);
+                                stTable.addView(initial);
+
+
+
+
                                 for (int i = 0; i < details.length(); i++) {
+
+                                    Log.e("detail1", details.toString());
                                     JSONObject detail = details.getJSONObject(i);
+
+                                    Log.e("detail2", detail.toString());
+
+                                    TableRow newRow = new TableRow(TrackResultActivity.this);
+                                    TextView tv = new TextView(TrackResultActivity.this);
+                                    tv.setText("NULL ");
+                                    tv.setLayoutParams(p);
+                                  //  tv.setWidth(50);
+                                    Log.e("detail3", detail.toString());
+                                    newRow.addView(tv);
+
+                                    TextView tv2 = new TextView(TrackResultActivity.this);
+                                    tv2.setText(detail.getString("status")+" ");
+                                    tv2.setLayoutParams(p);
+                                    //tv2.setWidth(50);
+                                    Log.e("detail4", detail.toString());
+                                    newRow.addView(tv2);
+
+                                    TextView tv3 = new TextView(TrackResultActivity.this);
+                                    tv3.setText(detail.getString("timeStamp"));
+                                    tv3.setLayoutParams(p);
+                                    //tv3.setWidth(50);
+                                    Log.e("detail5", detail.toString());
+                                    newRow.addView(tv3);
+
+
+                                    stTable.addView(newRow);
+
+
+
+
                                     Log.e("detail", detail.toString());
                                     data_to_show +=detail.toString()+"\n";
                                 }
+                                //TableLayout stTable = findViewById(R.id.statusTable);
                                 pb.setProgress(progressStatus*25);
-                                TextView pkgIDView = findViewById(R.id.details);
-                                pkgIDView.setText(data_to_show);
+                                //TextView pkgIDView = findViewById(R.id.details);
+                                //pkgIDView.setText(data_to_show);
+
                             } catch (org.json.JSONException e) {
                                 Log.e("json exception", "thrown while looping array");
                             } catch(java.lang.NullPointerException e) {
