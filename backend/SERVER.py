@@ -114,7 +114,7 @@ def userLogin():
 # Add package
 @app.route('/app/package/<string:username>', methods=['POST'])
 def addPackage(username):
-	print("[DEBUG] Check status Request :\n",request.json)
+	print("[DEBUG] add package Request :\n",request.json)
 	form={}
 	try:
 		print("check the username exists")
@@ -148,7 +148,7 @@ def addPackage(username):
 		Buyer_details['contactNo']=request.json['Buyer_details']['contactNo']
 		form['Buyer_details']=Buyer_details
 		form['destination']=request.json['destination']
-		form['status']='In warehouse'
+		form['status']='In Warehouse'
 
 		# packages = mongo.db.packages
 		packages.insert(form)
@@ -180,7 +180,9 @@ def checkPackageStatus(packageID,username):
 
 	try :
 		packages = mongo.db.packages
-		if user_type =='seller':
+		if username == "BUYER":
+			package = packages.find_one({'packageID' : packageID})
+		elif user_type =='seller':
 
 			package = packages.find_one({"$and":[{'packageID' : packageID},{'sellerID':user['_id']}]})
 
@@ -188,7 +190,7 @@ def checkPackageStatus(packageID,username):
 			package = packages.find_one({"$and":[{'packageID' : packageID},{'sellerID':user['seller_id']}]})
 
 		if package == None:
-			print("\n[ERROR] no package found...!!!")
+			print("\n[ERROR] none package found...!!!")
 			output = {'error_code':'100','message' : 'no package found'}
 			return jsonify({'Response' : output})
 		
@@ -418,28 +420,60 @@ def trackPackage(packageID,username):
 
 		if "event_list" not in package_events:
 			print ("no events found for the package")
-			output = { "error_code": "010", "message": "no events found for the package"}
+			output = { "error_code": "000", "message": "no events found for the package"}
 			return jsonify({'Response' : output})
 
 		count = len(package_events["event_list"])
 		details = []
 		events = mongo.db.events
+		D_flag=False
+		F_flag=False
+		M_flag=False
+		I_flag=False
+		O_flag=False
+		S_flag=False
 
 		for event_ID in  package_events["event_list"]:
 			detail={}
 			# print("event_ID:", event_ID)
 			event = events.find_one({'_id':event_ID})
 			detail['status']=event['status']
+			if detail['status'] == 'Failed':
+				F_flag = True
+			elif detail['status'] == 'Delivered':
+				D_flag = True
+			elif detail['status'] == 'Shipped':
+				S_flag = True
+			elif detail['status'] == 'Out for Delivery':
+				O_flag = True
+			elif detail['status'] == 'In Transit':
+				I_flag = True
+			elif detail['status'] == 'Missed Delivery':
+				M_flag = True
+
 			detail['timeStamp']=event['timeStamp']
 			
 			users = mongo.db.users
 			Updated_by=users.find_one({'_id': event['userID']})
-			detail['Updated By']=Updated_by['name']
+			detail['Updated_By']=Updated_by['name']
 
 			details.append(detail)
 
 		# print(details)
 		print("\n[INFO] track package successful ... ")
+
+		if D_flag : 
+			count = 100
+		elif F_flag :
+			count = 95
+		elif M_flag :
+			count = 90
+		elif O_flag :
+			count = 75
+		elif I_flag :
+			count = 50
+		elif S_flag :
+			count = 25
 
 		output = { "error_code": "000","count":count,"details":details}
 		# if len(event_list) ==0:
@@ -559,7 +593,10 @@ def all_packages(username):
 		packages = mongo.db.packages
 		user = users.find_one({'username':username})
 		
-		if user['user_type']== 'seller':
+
+		if  username == 'BUYER':
+			package_list=packages.find()
+		elif user['user_type']== 'seller':
 			package_list=packages.find({'sellerID':user['_id']})
 
 		elif user['user_type']== 'de':
@@ -800,6 +837,11 @@ def editProfile(username):
 		profile['email_id']=request.json['email_id']
 		profile['username']=request.json['username']
 		if len(request.json['password']) != 0:
+			if len(request.json['password']) < 8: 
+				print("\n[ERROR]] edit profile Failed...!!!")
+				output = { "error_code": "100", "message":  "password should be atleast 8 char long"}
+				return jsonify({'Response' : output})
+
 			profile['password']=bcrypt.generate_password_hash(request.json['password'])
 		
 			users.update_one(
@@ -832,7 +874,7 @@ def editProfile(username):
 
 		print (e.message)
 		print("\n[ERROR]] edit profile Failed...!!!")
-		output = { "error_code": "100", "message":  "not found"}
+		output = { "error_code": "100", "message":  "edit failed"}
 
 	return jsonify({'Response' : output})
 

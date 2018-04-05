@@ -40,4 +40,9 @@ public class SellerDashboard extends AppCompatActivity {
         Intent intent = new Intent(this, EditProfileActivity.class);
         startActivity(intent);
     }
+    /** Called when the user taps the Logout button */
+    public void userLogout(View view) {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
 }

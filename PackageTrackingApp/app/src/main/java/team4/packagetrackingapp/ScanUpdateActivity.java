@@ -276,7 +276,7 @@ public class ScanUpdateActivity extends AppCompatActivity implements AdapterView
                                         R.array.status_3,
                                         android.R.layout.simple_spinner_item);
                                 Log.e("status", "3");
-                            } else if (Objects.equals(pkgStatus, "In transit")) {
+                            } else if (Objects.equals(pkgStatus, "In Transit")) {
                                 adapter = ArrayAdapter.createFromResource(
                                         ScanUpdateActivity.this,
                                         R.array.status_4,

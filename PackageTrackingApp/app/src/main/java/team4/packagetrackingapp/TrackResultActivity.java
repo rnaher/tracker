@@ -162,7 +162,7 @@ public class TrackResultActivity extends AppCompatActivity {
                                     Log.e("detail", detail.toString());
                                     data_to_show +=detail.toString()+"\n";
                                 }
-                                pb.setProgress(progressStatus*25);
+                                pb.setProgress(progressStatus);
                                 TextView pkgIDView = findViewById(R.id.details);
                                 pkgIDView.setText(data_to_show);
                             } catch (org.json.JSONException e) {
