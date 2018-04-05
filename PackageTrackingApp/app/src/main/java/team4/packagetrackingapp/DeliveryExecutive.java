@@ -40,6 +40,7 @@ public class DeliveryExecutive extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        Log.e("on resume", "called");
         super.onResume();
         if(broadcastReceiver == null){
             broadcastReceiver = new BroadcastReceiver() {
@@ -61,6 +62,7 @@ public class DeliveryExecutive extends AppCompatActivity {
     }
 
     private void connect_server() {
+        Log.e("connect_server", "started");
         SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.MyPREFERENCES,
                 Context.MODE_PRIVATE);
         String username = sharedPreferences.getString("username", null);
