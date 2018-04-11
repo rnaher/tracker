@@ -86,7 +86,7 @@ public class viewNotifications extends AppCompatActivity {
 
                             TableLayout notTable = findViewById(R.id.notifTable);
                             android.widget.TableRow.LayoutParams p = new android.widget.TableRow.LayoutParams();
-                            p.leftMargin = 20;
+                            p.leftMargin = 40;
 
                             TableRow initial = new TableRow(viewNotifications.this);
                             TextView intv = new TextView(viewNotifications.this);
@@ -102,10 +102,10 @@ public class viewNotifications extends AppCompatActivity {
                             //intv2.setWidth(50);
                             initial.addView(intv2);
 
-                            TextView intv3 = new TextView(viewNotifications.this);
-                            intv3.setText("Seen ");
-                            intv3.setLayoutParams(p);
-                            initial.addView(intv3);
+//                            TextView intv3 = new TextView(viewNotifications.this);
+//                            intv3.setText("Seen ");
+//                            intv3.setLayoutParams(p);
+//                            initial.addView(intv3);
 
                             //intv3.setWidth(50);
                             notTable.addView(initial);
@@ -131,12 +131,12 @@ public class viewNotifications extends AppCompatActivity {
                                     Log.e("detail4", detail.toString());
                                     newRow.addView(tv2);
 
-                                    TextView tv3 = new TextView(viewNotifications.this);
-                                    tv3.setText(detail.getString("seen"));
-                                    tv3.setLayoutParams(p);
-                                    //tv3.setWidth(50);
-                                    Log.e("detail5", detail.toString());
-                                    newRow.addView(tv3);
+//                                    TextView tv3 = new TextView(viewNotifications.this);
+//                                    tv3.setText(detail.getString("seen"));
+//                                    tv3.setLayoutParams(p);
+//                                    //tv3.setWidth(50);
+//                                    Log.e("detail5", detail.toString());
+//                                    newRow.addView(tv3);
                                     notTable.addView(newRow);
 
 
